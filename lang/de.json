@@ -1,0 +1,164 @@
+{
+    "mode.play.title": "Spiel Modus",
+    "mode.place.title": "Platzier Modus",
+    "mode.select.title": "Auswahl Modus",
+    "prop.bedsidetable.info": "Ein schöner Nachttisch.",
+    "prop.chair.info": "Ein hölzener Stuhl. Mit Sicherheit gemütlich.",
+    "prop.table.info": "Ein hölzener Tisch. Er muss einst prachtvoll ausgesehen haben, doch die Zeit hat ihm nichts Gutes getan.",
+    "prop.bed.info": "Ein altmodisches Bett. Die Matratze ist auch nicht mehr die Neuste.",
+    "prop.yellowcarpet.info": "Ein hässlicher Teppich. Warum auch immer man sich so etwas ins Haus legt.",
+    "prop.wardrobeopen.info": "Ein robuster Schrank mit goldenen Türknöpfen. Er ist offen, was versteckt sich wohl darin?",
+    "prop.wardrobeclosed.info": "Ein robuster Schrank mit goldenen Türknöpfen. Er ist geschlossen, was versteckt sich wohl darin?",
+    "prop.hangingpicture1.info": "Ein Gemälde einer bezaubernden Landschaft.\nEin kleines Gebirge zur Linken, mittig eine im weite, lebhafte Graslandschaft, und ein kleiner See zur Rechten.",
+    "prop.hangingpicture2.info": "Ein Gemälde einer bezaubernden Landschaft.\nEin üpiges Gebirge zur Linken, mittig eine Graslandschaft, und ein See zur Rechten.",
+    "prop.hangingpicture3.info": "Ein Gemälde.\nEin zerbröckelndes Gebirge zur Linken, ausgetrockete Wiesen in der Mitte, und... ein See zur Rechten.\nMögen Sie in Frieden ruhen.",
+    "prop.hangingpicturesmile.info": "Ein Gemälde einer Landschaft, quer durchzogen von einer Gebirgskette und einem länglichen See.\nMan könnte meinen, es sei ein lächelndes Gesicht darin zu erkennen. Ein schreckliches Lächeln.",
+    "prop.hangingpictureneutral.info": "Ein Gemälde einer Landschaft, geradlinig durchzogen von einer Gebirgskette und einem länglichem See. Ich meine ein Gesicht darin zu erkennen, ein ruhiger, milder Blick.",
+    "prop.lamp.info": "Eine alte Lampe.",
+    "prop.bookopen.info": "Ein aufgeschlagenes Buch. Das Papier vergilbt langsam.",
+    "prop.bookclosed.info": "Ein Buch. Der Buchrücken hat wohl schon bessere Zeiten gesehen.",
+    "prop.plate.info": "Ein einfacher Teller. Nur das Schnitzel darauf fehlt.",
+    "prop.piano.info": "Ein altes Klavier mit Elfenbeinklaviatur. Es sind Initialien eingraviert.",
+    "prop.bench.info": "Eine harte Holzbank.",
+    "prop.gramophone.info": "Ein Grammophon. Es wirkt fast wie echtes Gold.",
+    "prop.redcarpet.info": "Ein edler roter Teppich. Ein schönes Exemplar... vermissen würde den doch keiner, oder?",
+    "tile.floor1.info": "Ein verschlissener Holzboden, die Dielen haben wohl schon so manchen schweren Tritt ertragen müssen.",
+    "tile.floor2.info": "Was eine seltsame Farbe für einen Holzboden. Vielleicht ist war er mal Kupfer?",
+    "tile.floor3.info": "Simple Steinfliesen. Sie sind sehr glatt und kaum verkratzt, alzu alt werden sie nicht sein.",
+    "tile.wall.info": "Eine Wand aus Holzbrettern. Das Zuhause manch eines Holzwurms.",
+    "tile.stonewall.info": "Ein Trümer von Steinwand. Solch eine Wand würde sich sicher gut in Kerkern machen.",
+    "actor.person1.default": [
+        "Was kann ich für Sie tun?",
+        "Hallo, gibt es etwas?",
+        "Haben Sie nichts besseres zu tun?",
+        "Entschuldigen Sie, ich bin gerade beschäftigt."
+    ],
+    "actor.person1.firstDialogue": [
+        "Hallo. Sie müssen wohl der Exorzist sein. Ich hoffe, dass sie uns helfen können. Niemand in diesem Haus ist mehr ganz bei Sinnen, seitdem.. nun ja, Sie wissen ja schon.",
+        "Hallo. Sie sind wahrscheinlich hier, um sich um das Problem zu kümmern. Versuchen Sie es gerne, doch enden Sie bitte nicht so wie wir.."
+    ],
+    "actor.person1.confusedAfterMovement": [
+        "Was haben Sie getan? Wie bin ich hier her gekommen?\nKönnten Sie mich nun bitte allein lassen..",
+        "Ja bitte? Halten Sie sich kurz, ich bin gerade am.., vergessen Sie es.\nIch hätte schwören können, ich wäre wo anders."
+    ],
+    "actor.person1.believeToBeHated": [
+        "Nun, wir verstanden uns nie sonderlich gut..\n\nVielleicht ist es besser, nicht darüber zu reden.",
+        "Man soll ja nicht schlecht von den Toten sprechen, aber viel schlimmer kann es das zwischen uns nun auch nicht mehr machen.\nAn manchen Tagen machte es mir Angst.\nDoch gerade jetzt sollte ich doch aufatmen können.\n Aber ich kann es nicht."
+    ],
+    "actor.person1.believeToBeLiked": [
+        "Wie Bitte? Was wollen Sie mir mit der Frage unterstellen?\nWir hatten immer eine gute Beziehung, und das hat sich bestimmt auch nicht geändert, jetzt wo..\nBitte lassen Sie mich jetzt allein.",
+        "Was geht Sie das überhaupt an? Ich hätte /ihm/ niemals etwas getan, und /er/ würde mir auch nie etwas tun..\nLassen Sie /ihn/ bitte in Frieden"
+    ],
+    "actor.person1.believeToBeNeutral": [
+        "Wie ich zu /ihm/ stand? Nun ja, sonderlich viel hatten wir nicht miteinander zu tun.\nIch bezweifle, dass /er/ einen Groll gegen mich gehegt hat, auch wenn das jetzt wohl nicht mehr relevant ist. Oder?",
+        "Wirklich viel hatte ich nicht mit /ihm/ zu tun. Wir haben uns zwar normal gegrüßt, wenn wir uns begegneten, aber unternommen haben wir nie etwas.\nEs gab also auch wenig Grund sich feindselig gegenüber dem anderen zu sein."
+    ],
+    "actor.person1.scaredOfPerson": [
+        "Bitte reden Sie nicht über /ihn/. Ich möchte diese hasserfüllten Augen vergessen.\nEs mag schlimm klingen, aber erst seitdem /er/ verstorben ist, kann ich wieder ruhig schlafen.Obwohl ich immer noch ein ungutes Gefühl habe, als würden mich eben jene Augen immernoch anstarren, und ihre Rache planen..\n Verzeihen Sie mir meine Spinnereien, ich bin wohl etwas durcheinander.",
+        "Die Zeit seit.. Sie wissen schon, war vielleicht noch schlimmer als die Zeit vorher. Hinter jedem noch so kleinen Unglück vermute ich /ihn/. Neulich erst zerbrach mir ein Spiegel, und gleich darauf muss ich wohl eine Vase umgestoßen haben.\n Das Pech scheint mich zu verfolgen, aber ich bilde mir das wohl nur ein.."
+    ],
+    "actor.person1.eating": [
+        "Entschuldigen Sie, aber ich bin gerade am Essen. Kommen Sie bitte später wieder."
+    ],
+    "actor.person1.lookingAtPainting": [
+        "Es ist ein faszinierendes Gemälde. Habes Sie es schon gesehen?"
+    ],
+    "actor.person1.lookingAtChangedPainting": [
+        "Ach, Sie sind es. Verzeihen Sie mir, dass ich ein wenig aufgebracht bin.\nVielleicht glauben Sie mir nicht, aber eben hing hier noch ein anderes Gemälde..\nIch glaube ich sollte mich wohl lieber ausruhen, die letzte Zeit hat mich wohl doch mitgenommen.."
+    ],
+    "actor.person1.suspectingChangedPainting": [
+        "Gut, dass Sie hier sind. Ich möchte ihnen nichts unterstellen, aber haben Sie Gemälde vertauscht?\nNoch gestern hing hier ein anderes... oder vielleicht auch nicht? Ach, vielleicht spielt mir auch nur jemand der anderen einen Streich.",
+        "Ich weiß es klingt verrückt, aber das Gemälde ist ganz anders, als ich es in Erinnerung hatte."
+    ],
+    "actor.person1.playingPiano": [
+        "Was gibt es denn? Ich würde das Stück gerne weiterspielen, wenn es nichts wichtiges ist."
+    ],
+    "actor.person1.standingAtTheWindow": [
+        "Die letzten Tage war es doch immer wieder erfrischend, hier am Fenster zu stehen. Auch wenn es stürmt, oder regnet, alles ist besser als dieser Ort..\nOh bitte, erzählen Sie den letzten Teil nicht herum."
+    ],
+    "actor.person1.standingAtTheWindowRainy": [
+        "Ob es wohl noch aufhört zu regnen? Zur düstren Stimmung hier drin, mag es zwar passen, aber so versinken wir alle wohl noch tiefer im Trübsal."
+    ],
+    "actor.person1.rainyWeatherHint": [
+        "An jenem Tag hat es auch geregnet. Ich hoffe es hört bald auf, die Erinnerungen kommen wieder..",
+        "Seit jenem Tag kann ich den Regen nicht mehr ausstehen. Dass es auch heute regnet, ist mit Sicherheit ein schlechtes Omen.."
+    ],
+    "actor.person1.goodWeatherHint": [
+        "Warum konnte es nicht an einem Tag mit schlechten Wetter geschehen? Wie soll man solche Tage wie heute da noch froh werden.",
+        "An jenem Tag strahlte die Sonne ebenso. Vielleicht ist das Wetter sogar zu ähnlich. Aber das bilde ich mir sicher nur ein.."
+    ],
+    "actor.person1.stormyWeatherHint": [
+        "Der Sturm hat /ihn/ damals mitgenommen. Ob er /ihn/ heute wieder bringt?"
+    ],
+    "actor.child1.default": [
+        "Bist du hier um zu spielen?",
+        "Lass mich bitte allein."
+    ],
+    "actor.child1.firstDialogue": [
+        "Wer bist du denn? Bist du wegen /ihm/ gekommen? Geh lieber wieder, der der vor dir hier war, kam nicht wieder."
+    ],
+    "actor.child1.confusedAfterMovement": [
+        "Hör auf! Warum hast du mich hierher gebracht.. Bring mich zurück, oder..",
+        "Hey, weißt du was ich am spielen war? Ich kann mich nicht erinnern..\nUnd mir ist kalt."
+    ],
+    "actor.child1.believeToBeHated": [
+        "/Er/ wollte nie mit mir spielen, und sah immer gruselig aus. Wenn /er/ da war, hab ich mich manchmal nicht aus dem Zimmer getraut.."
+    ],
+    "actor.child1.believeToBeLiked": [
+        "Ich will wieder mit /ihm/ spielen. Wir haben immer soviel Spaß dabei, aber wir haben jetzt schon lange nicht mehr gespielt..\nÜberredest du /ihn/ für mich?",
+        "Es war immer toll mit /ihm/. In letzter Zeit ist mir so langweilig wo /er/ weg ist..\nBringst du ihn zurück?"
+    ],
+    "actor.child1.believeToBeNeutral": [
+        "Manchmal haben wir zusammen gespielt, aber es war immer langweilig."
+    ],
+    "actor.child1.scaredOfPerson": [
+        "Nein, nein, nein.. Hör auf! Ich will nicht über /ihn/ reden..\n/Er/ hat immer gelächelt, aber meinte es nicht so.. Jetzt habe ich immer wieder Alpträume, dass /er/ vor mir steht.",
+        "/Er/ lächelt mich manchmal aus dem Spiegel an. Da bekomme ich Angst, und verstecke mich unterm Bett. Manchmal reist /er/ mir auch die Bettdecke weg, dann ist mir immer eiskalt.."
+    ],
+    "equipment.thermometer.dialog": "Es zeigt...",
+    "equipment.thermometer.dialogWithInfo": "Es zeigt /temperature/ Grad.",
+    "equipment.emf.dialog": "Du schaltest das Gerät an, und es versucht ein Signal zu finden..",
+    "equipment.emf.dialogNoInfo": "Du schaltest das Gerät an, und es versucht ein Signal zu finden..\n\n Es scheint kein Signal in der Nähe zu geben.",
+    "equipment.emf.dialogWithInfo": "Du schaltest das Gerät an, und es versucht ein Signal zu finden..\n\nDas Gerät piept und leuchtet.\n",
+    "equipment.emf.dialogStrength.weak": "Ein schwaches Signal wird aufgezeichnet. ",
+    "equipment.emf.dialogStrength.normal": "Ein Signal wird aufgezeichnet. ",
+    "equipment.emf.dialogStrength.strong": "Ein starkes Signal wird aufgezeichnet. ",
+    "equipment.emf.dialogLevel": "Du kannst eine Stufe von /level/ darauf erkennen.",
+    "journal.introduction": "Dies ist ihr Notizbuch.\nHier können Sie ihre Überlegungen sammeln, sowie Informationen zu Geistertypen und Ereignissen nachschlagen.\n\nWährend ihrer Ermittlungen werden Sie mit übernatürlichen Ereignissen konfrontiert sein, sowie Spuren des Geistes suchen.\nIm gelben Reiter finden Sie Informationen, sowie ihre eigenen Notizen zu verschiedenen Geistertypen.\nEin Geister kann je nach Fall mehrere Geistertypen haben, welche sein Verhalten und Erscheinen beeinflussen.\n\nAm Ende ihrer Ermittlungen, müssen Sie versuchen, möglichst viele korrekte Informationen über den Geist liefern zu können.\n\nZu ihrer Hilfe können Sie verschiedene Ausrüstung mit zur Ermittlung bringen.\nFunktionsweise und Tips zur Anwendung dieser Ausrüstung finden Sie unter dem roten Reiter.\n\nDer blaue Reiter bietet ihnen die Möglichkeit, ihre Vermutungen schnell zu notieren.\nHier müssen Sie nicht ihre Ergebnisse eintragen, dass geschieht separat.\nStattdessen soll es ihnen helfen, Hinweise zu behalten und zu kombinieren.",
+    "journal.ghostIntroduction": "Hier finden Sie bekannte Eigenschaften der verschiedenen Geistertypen. Ebenso können Sie eigene Notizen hinzufügen, um diese in zukünftigen Ermittlungen zur Verfügung zu haben.\n\nEs gibt folgende primäre Geistereigenschaften, deren Kombination eindeutig einem Geist zugeordnet werden können.:\n- Zeigt Irrlicht ähnliche Partikel innerhalb seines Lieblingsraums.\n- Verringert die Temperatur seines Lieblingsraums mit der Zeit unter 0 Grad.\n- Antwortet auditiv.\n- Antwortet schriftlich.\n\nEbenso gibt es sekundäre Geistereigenschaften, welche zwar durch den Typ des Geistes beeinflusst werden können, aber nur selten einen Geistertyp eindeutig bestimmen.\nDarunter fallen:\n- Alter\n- Geschlecht\n- Lieblingsraum",
+    "journal.test1": "test1",
+    "journal.test2": "test2",
+    "journal.test3": "test3",
+    "question.age.triggerStrings": [
+        "Wie alt bist du",
+        "Wie alt sind sie",
+        "Wie viele Jahre bist du alt",
+        "Wie viele Jahre sind sie alt"
+    ],
+    "question.gender.triggerStrings": [
+        "Was bist du",
+        "Was sind sie",
+        "Was ist dein Geschlecht",
+        "Was ist ihr Geschlecht",
+        "Welches Geschlecht hast du",
+        "Welches Geschlecht haben sie",
+        "Welches Geschlecht bist du",
+        "Welches Geschlecht sind sie"
+    ],
+    "question.name.triggerStrings": [
+        "Wie heißt du",
+        "Wie heisst du",
+        "Wie heißen sie",
+        "Wie heissen sie",
+        "Wie ist dein Name",
+        "Wie ist ihr Name",
+        "Was ist dein Name",
+        "Was ist ihr Name",
+        "Wie nennst du dich",
+        "Wie nennen sie sich",
+        "Wie nennt man dich",
+        "Wie nennt man sie"
+    ],
+    "gender.female": "Weiblich",
+    "gender.male": "Männlich"
+}

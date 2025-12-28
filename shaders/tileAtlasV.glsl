@@ -1,0 +1,30 @@
+#version 330 core
+
+layout(location = 0) in vec2 aPosition;
+layout(location = 1) in vec2 aTexCoord;
+layout(location = 2) in float aTileIndex;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
+uniform float uTilesPerRow;
+
+out vec2 TexCoord;
+
+void main()
+{
+    gl_Position = uProjection * uView * uModel * vec4(aPosition, 0.0, 1.0);
+
+    float tileSize = 1.0 / uTilesPerRow;
+    float tileX = mod(aTileIndex, uTilesPerRow);
+    float tileY = floor(aTileIndex / uTilesPerRow);
+
+    // Offset um einen halben Texel nach innen
+    float texelSize = 1.0 / 64;
+    float padding = texelSize * 0.01;
+
+    vec2 tileOffset = vec2(tileX, tileY) * tileSize;
+    vec2 uvInset = aTexCoord * (tileSize - 2.0 * padding) + padding;
+
+    TexCoord = tileOffset + uvInset;
+}
