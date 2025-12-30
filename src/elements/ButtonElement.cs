@@ -92,7 +92,7 @@ namespace fiveSeconds
             KeyboardState keyboard = Input.keyboard;
             MouseState mouse = Input.mouse;
 
-            if (mouse.IsButtonPressed(MouseButton.Left))
+            if (Keybind.LEFTCLICK.IsPressed())
             {
                 if (Hovered(out _))
                 {

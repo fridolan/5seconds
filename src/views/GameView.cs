@@ -121,28 +121,28 @@ namespace fiveSeconds
             }
 
             float normalizingFactor =
-                (keyboard.IsKeyDown(Keys.W) ^ keyboard.IsKeyDown(Keys.S))
-                && (keyboard.IsKeyDown(Keys.A) ^ keyboard.IsKeyDown(Keys.D)) ? MathF.Sqrt(2) / 2f : 1;
+                (Keybind.UP.IsDown() ^ Keybind.DOWN.IsDown())
+                && (Keybind.LEFT.IsDown() ^ Keybind.RIGHT.IsDown()) ? MathF.Sqrt(2) / 2f : 1;
 
             float magnitude = dT * normalizingFactor * 2;
 
             // Camera Movement
-            if (keyboard.IsKeyDown(Keys.W))
+            if (Keybind.UP.IsDown())
             {
                 CameraPos.Y += magnitude / Zoom * MathF.Cos(-CameraAngle);
                 CameraPos.X += magnitude / Zoom * MathF.Sin(-CameraAngle);
             }
-            if (keyboard.IsKeyDown(Keys.S))
+            if (Keybind.DOWN.IsDown())
             {
                 CameraPos.Y += magnitude / Zoom * MathF.Cos(-CameraAngle + MathF.PI);
                 CameraPos.X += magnitude / Zoom * MathF.Sin(-CameraAngle + MathF.PI);
             }
-            if (keyboard.IsKeyDown(Keys.A))
+            if (Keybind.LEFT.IsDown())
             {
                 CameraPos.Y += magnitude / Zoom * MathF.Cos(-CameraAngle - MathF.PI / 2);
                 CameraPos.X += magnitude / Zoom * MathF.Sin(-CameraAngle - MathF.PI / 2);
             }
-            if (keyboard.IsKeyDown(Keys.D))
+            if (Keybind.RIGHT.IsDown())
             {
                 CameraPos.Y += magnitude / Zoom * MathF.Cos(-CameraAngle + MathF.PI / 2);
                 CameraPos.X += magnitude / Zoom * MathF.Sin(-CameraAngle + MathF.PI / 2);
@@ -170,7 +170,7 @@ namespace fiveSeconds
 
             if (validHover && playerEntity != null)
             {
-                if (mouse.IsButtonPressed(MouseButton.Left))
+                if (Keybind.LEFTCLICK.IsPressed())
                 {
                     MoveEntityAction action = new()
                     {

@@ -17,7 +17,7 @@ namespace fiveSeconds
         public float HeaderFactor = 1 / 0.7f;
         public string HeaderText = "";
         public bool RenderHeader = true;
-        public MouseButton TriggerOn = MouseButton.Left;
+        public Keybind TriggerOn = Keybind.LEFTCLICK;
 
         public void Render()
         {
@@ -112,7 +112,7 @@ namespace fiveSeconds
                     Input.currentlyTexting = false;
                 }
 
-                if (mouse.IsButtonPressed(MouseButton.Left))
+                if (Keybind.LEFTCLICK.IsPressed())
                 {
                     if (!Hovered(out _))
                     {
@@ -124,7 +124,7 @@ namespace fiveSeconds
 
             } ////
 
-            if (mouse.IsButtonPressed(TriggerOn))
+            if (TriggerOn.IsPressed())
             {
                 if (Hovered(out _))
                 {

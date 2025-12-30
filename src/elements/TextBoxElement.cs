@@ -62,7 +62,7 @@ namespace fiveSeconds
                         Input.currentlyTexting = false;
                     }
 
-                    if (mouse.IsButtonPressed(MouseButton.Left))
+                    if (Keybind.LEFTCLICK.IsPressed())
                     {
                         if (!Hovered(out _))
                         {
@@ -74,7 +74,7 @@ namespace fiveSeconds
 
                 } ////
 
-                if (mouse.IsButtonPressed(MouseButton.Left))
+                if (Keybind.LEFTCLICK.IsPressed())
                 {
                     if (Hovered(out _))
                     {

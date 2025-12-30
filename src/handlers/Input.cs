@@ -18,5 +18,7 @@ namespace fiveSeconds
         public static Vector2 mousePos;
         //public static Vector2i mouseTile; 
         public static Vector2 wheelDelta;
+
+        
     }
 }
