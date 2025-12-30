@@ -37,6 +37,12 @@ namespace fiveSeconds
                 Position = /* (Width / 3, Height / 3) */ (0,0)
             });
 
+            AddEntity(new Aspect()
+            {
+               Position = (3,3), 
+            });
+            
+
             CreateEntityMesh();
         }
     }

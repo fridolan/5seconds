@@ -6,7 +6,7 @@ namespace fiveSeconds
     public class TextInputElement : WithBaseElement
     {
         public int BorderSize = 4;
-        public int BorderTexture = Textures.hud_color;
+        public int BorderTexture = 666;
         public bool RenderBorder = true;
         public string Text = "";
         public float TextSize = 1f;
@@ -60,7 +60,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position,
                         Size = (BorderSize, BaseElement.Size.Y),
-                        TextureId = Textures.selection_color,
+                        TextureId = 666,
 
                     }
                 );
@@ -70,7 +70,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position,
                         Size = (BaseElement.Size.X, BorderSize),
-                        TextureId = Textures.selection_color,
+                        TextureId = 666,
                     }
                 );
                 // Right
@@ -79,7 +79,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position + (BaseElement.Size.X - BorderSize, 0),
                         Size = (BorderSize, BaseElement.Size.Y),
-                        TextureId = Textures.selection_color,
+                        TextureId = 666,
                     }
                 );
                 // Bottom
@@ -88,7 +88,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position + (0, BaseElement.Size.Y - BorderSize),
                         Size = (BaseElement.Size.X, BorderSize),
-                        TextureId = Textures.selection_color,
+                        TextureId = 666,
                     }
                 );
             }

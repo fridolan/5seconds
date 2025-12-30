@@ -6,7 +6,7 @@ namespace fiveSeconds
     public class TextBoxElement() : WithBaseElement
     {
         public int borderSize = 4;
-        public int borderTexture = Textures.hud_color;
+        public int borderTexture = 666;
         public bool renderBorder = true;
 
         public Text text;

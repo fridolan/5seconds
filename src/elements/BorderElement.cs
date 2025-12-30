@@ -5,7 +5,7 @@ namespace fiveSeconds
     public class BorderElement() : WithBaseElement
     {
         public int borderSize = 4;
-        public int borderTexture = Textures.hud_color;
+        public int borderTexture = 666;
         
         public bool RenderBaseElement = false;
 

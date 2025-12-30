@@ -6,9 +6,9 @@ namespace fiveSeconds
     public class ButtonElement : WithBaseElement
     {
         public int BorderSize = 4;
-        public int BorderTexture = Textures.hud_color;
-        public int HoverTexture = Textures.hud_transparent_color;
-        public int ClickTexture = Textures.selection_color;
+        public int BorderTexture = 666;
+        public int HoverTexture = 666;
+        public int ClickTexture = 666;
 
         public bool RenderBaseElement = false;
         public bool RenderBorder = true;
@@ -17,7 +17,7 @@ namespace fiveSeconds
 
         public string Text = "";
         public float TextSize = 1f;
-        public Action SubmitAction = () => { };
+        public Action SubmitAction = () => {};
 
         public float HeaderFactor = 1 / 0.7f;
         public string HeaderText = "";

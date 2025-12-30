@@ -26,7 +26,7 @@ namespace fiveSeconds
                 (BaseElement.Position.X, BaseElement.Position.Y + BaseElement.Size.Y / 2 - LineWidth / 2)
                 : (BaseElement.Position.X + BaseElement.Size.X / 2 - LineWidth / 2, BaseElement.Position.Y),
                 Size = Horizontal ? (BaseElement.Size.X, LineWidth) : (LineWidth, BaseElement.Size.Y),
-                TextureId = Textures.hud_color,
+                TextureId = 666,
             };
 
             line.Render();

@@ -12,8 +12,10 @@ namespace fiveSeconds
         public Vector2 CameraPos = new(0f, 0f);
         public float CameraAngle = 0f;
 
-        public Vector2 PlayerRelativePosition = (1, 1); // To Middle, not Com / Position
-        public float PlayerRelativeAngle = 0f;
+        public Vector2i HoveredTile;
+
+        public Entity? ControlledEntity;
+        private Mesh SpecialTileMesh = new();
 
         public override void OnLoad()
         {
@@ -35,8 +37,8 @@ namespace fiveSeconds
 
             Stage stage = Game.CurrentStage;
 
-            if(stage.TileMeshDirty) stage.CreateTileMesh();
-            if(stage.EntityMeshDirty) stage.CreateEntityMesh();
+            if (stage.TileMeshDirty) stage.CreateTileMesh();
+            if (stage.EntityMeshDirty) stage.CreateEntityMesh();
 
             Matrix4 projection = Matrix4.CreateOrthographic(2f * Window.aspectRatio / View.CurrentView.Zoom, 2f / View.CurrentView.Zoom, -10f, 10f);
 
@@ -48,11 +50,11 @@ namespace fiveSeconds
             GL.UniformMatrix4(GL.GetUniformLocation(TileShader.Handle, "uView"), false, ref view);
             GL.UniformMatrix4(GL.GetUniformLocation(TileShader.Handle, "uProjection"), false, ref projection);
             GL.Uniform1(GL.GetUniformLocation(TileShader.Handle, "uTilesPerRow"), 8f);
-            
+
 
             // Render Tiles
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, Textures.floor_atlas);
+            GL.BindTexture(TextureTarget.Texture2D, Tile.TextureId);
             TileShader.SetInt("uAtlas", 0);
 
             Matrix4 model =
@@ -72,9 +74,34 @@ namespace fiveSeconds
             GL.BindVertexArray(stage.EntityMesh.Vao);
             GL.DrawElements(PrimitiveType.Triangles, stage.EntityMesh.IndexCount, DrawElementsType.UnsignedInt, 0);
 
+            // Render Special Tile Layer
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, Textures.special_tile_atlas);
+            TileShader.SetInt("uAtlas", 0);
+
+            SpecialTileMesh.Clear();
+            if (stage.ValidTilePos(HoveredTile))
+            {
+                SpecialTileMesh.RectAt(HoveredTile, 0, (1,1));
+            }
+            SpecialTileMesh.UploadToGPU();
+
+            GL.BindVertexArray(SpecialTileMesh.Vao);
+            GL.DrawElements(PrimitiveType.Triangles, SpecialTileMesh.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
 
         public override void HandleInputs(FrameEventArgs args)
+        {
+            float dT = (float)args.Time;
+
+            KeyboardState keyboard = Input.keyboard;
+            MouseState mouse = Input.mouse;
+
+            HandleCameraInputs(args);
+            HandleGameplayInputs(args);
+        }
+
+        public void HandleCameraInputs(FrameEventArgs args)
         {
             float dT = (float)args.Time;
 
@@ -120,32 +147,29 @@ namespace fiveSeconds
                 CameraPos.Y += magnitude / Zoom * MathF.Cos(-CameraAngle + MathF.PI / 2);
                 CameraPos.X += magnitude / Zoom * MathF.Sin(-CameraAngle + MathF.PI / 2);
             }
+        }
 
-          /*   if(!((keyboard.IsKeyDown(Keys.W) || (keyboard.IsKeyDown(Keys.S))) || (keyboard.IsKeyDown(Keys.A) || (keyboard.IsKeyDown(Keys.D)))))
-            {
-                Console.WriteLine("nichts gedrückt");
-            } */
+        public void HandleGameplayInputs(FrameEventArgs args)
+        {
+            float dT = (float)args.Time;
 
-            // Camera rotation
-            if (keyboard.IsKeyDown(Keys.Q))
-            {
-                CameraAngle -= dT;
-            }
-            if (keyboard.IsKeyDown(Keys.E))
-            {
-                CameraAngle += dT;
-            }
+            KeyboardState keyboard = Input.keyboard;
+            MouseState mouse = Input.mouse;
 
+            Stage stage = Game.CurrentStage;
+
+            HoveredTile = ScreenToTilePosition(mouse.Position, 0);
+            //Console.WriteLine($"mTP {HoveredTile}");
         }
 
         private Vector2i ScreenToTilePosition(Vector2 mousePos, float angle)
         {
-            Vector2 m = (Window.Width / 2, Window.Height / 2) + RotateVector(mousePos - (Window.Width / 2, Window.Height / 2), angle);
-            Vector2 offset = PlayerRelativePosition;
+            Vector2 m = (Window.Width / 2, Window.Height / 2) + RotateVector(new Vector2(mousePos.X, Window.Height - mousePos.Y) - (Window.Width / 2, Window.Height / 2), angle);
+            Vector2 offset = CameraPos;
 
             Vector2 tile = (
-                (int)Math.Floor((m.X / Window.Width * 2f - 1.0f) / Zoom * Window.aspectRatio + offset.X + 0.5f),
-                (int)Math.Floor((m.Y - Window.Height / 2) / Window.Height * 2 / Zoom + offset.Y + 0.5f));
+                (int)Math.Floor((m.X / Window.Width * 2f - 1.0f) / Zoom * Window.aspectRatio + offset.X /* + 0.5f */),
+                (int)Math.Floor((m.Y - Window.Height / 2) / Window.Height * 2 / Zoom + offset.Y /* + 0.5f */));
 
             /* tile = (
                 Math.Max(Math.Min(tile.X, MapWidth - 1), 0),

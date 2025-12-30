@@ -6,7 +6,7 @@ namespace fiveSeconds
     public class ListElement2 : WithBaseElement
     {
         public int BorderSize = 4;
-        public int BorderTexture = Textures.hud_color;
+        public int BorderTexture = 666;
 
         public string[] Strings;
         public BorderElement[] BorderElements;

@@ -15,8 +15,30 @@ namespace fiveSeconds
         public bool EntityMeshDirty = false;
         public bool TileMeshDirty = false;
 
-        public abstract void Generate();
 
+        private float roundTime = 0;
+        private List<ActionList> actionLists;
+        public void Tick(float dT, out bool done)
+        {
+            roundTime += dT;
+            actionLists = [.. EntityList.Select((e) => e.ActionList).Where(l => l.Finished == false)];
+            if (actionLists.Count > 0)
+            {
+                ActionList nextList = actionLists.MinBy(l => l.GetNextTiming());
+                if(nextList != null && nextList.GetNextTiming() <= roundTime)
+                {
+                    nextList.Act();
+                }
+                done = false;
+            } else
+            {
+                Console.WriteLine("Round over");
+                done = true;
+            }
+        }
+
+        public abstract void Generate();
+        #region Render
         public void CreateTileMesh()
         {
             TileMesh = new();
@@ -43,7 +65,7 @@ namespace fiveSeconds
                 for (int j = 0; j < Width; j++)
                 {
                     Entity? entity = Entities[i][j];
-                    if(entity == null) continue;
+                    if (entity == null) continue;
 
                     EntityMesh.RectAt((j, i), entity.AtlasIndex, (1, 1));
                 }
@@ -52,11 +74,12 @@ namespace fiveSeconds
             EntityMesh.UploadToGPU();
             EntityMeshDirty = false;
         }
+        #endregion
 
         public bool AddEntity(Entity entity)
         {
             Vector2i Position = entity.Position;
-            if(!ValidTilePos(Position)) return false;
+            if (!ValidTilePos(Position)) return false;
 
             Entities[Position.Y][Position.X] = entity;
             EntityList.Add(entity);
@@ -68,7 +91,7 @@ namespace fiveSeconds
         public bool RemoveEntity(Entity entity)
         {
             Vector2i Position = entity.Position;
-            if(!ValidTilePos(Position)) return false;
+            if (!ValidTilePos(Position)) return false;
 
             Entities[Position.Y][Position.X] = null;
             EntityList.Remove(entity);
@@ -79,7 +102,7 @@ namespace fiveSeconds
 
         public bool MoveEntity(Entity entity, Vector2i newPosition)
         {
-            if(!ValidTilePos(newPosition)) return false;
+            if (!ValidTilePos(newPosition)) return false;
 
             Vector2i oldPosition = entity.Position;
 
@@ -97,12 +120,14 @@ namespace fiveSeconds
             if (entity != null) MoveEntity(entity, newPosition);
         }
 
-        public bool ValidTilePos(Vector2i Position, bool log = false)
+        public bool ValidTilePos(Vector2i? Position, bool log = false)
         {
-            bool valid = Position.X >= 0 && Position.X < Width
-                && Position.Y >= 0 && Position.Y < Height;
-            if(log) Console.WriteLine($"Invalid Tile Position {Position}");
-    
+            if (Position is not { } p) return false;
+
+            bool valid = p.X >= 0 && p.X < Width
+                && p.Y >= 0 && p.Y < Height;
+            if (log && !valid) Console.WriteLine($"Invalid Tile p {p}");
+
             return valid;
         }
     }

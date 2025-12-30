@@ -2,6 +2,8 @@ namespace fiveSeconds
 {
     public class Tile
     {
+        public static readonly int TextureId = Textures.tile_atlas;
+
         public bool Walkable = false;
         public bool Solid = false;
         public int AtlasIndex;

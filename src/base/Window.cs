@@ -14,10 +14,13 @@ namespace fiveSeconds
 
         public static int FrameRate = 0;
 
+        public static Server Server;
+        public static Client Client;
+
         public Window() : base(
             new GameWindowSettings
             {
-               UpdateFrequency = FrameRate,
+                UpdateFrequency = FrameRate,
             },
             new NativeWindowSettings
             {
@@ -66,6 +69,10 @@ namespace fiveSeconds
         {
             base.OnUpdateFrame(args);
 
+            AudioManager.Update(args.Time);
+			Server?.Tick(args.Time);
+			Client?.Tick();
+
             HandleInputs(args, KeyboardState, MouseState);
             Game.OnUpdateFrame(args);
         }
@@ -85,7 +92,7 @@ namespace fiveSeconds
             TimeAccumulator += args.Time;
             if (TimeAccumulator >= 1.0)
             {
-                Console.WriteLine($"FPS: {FrameCount}");
+                Console.WriteLine($"FPS: {FrameCount}, State: {Game.State}");
                 FrameCount = 0;
                 TimeAccumulator -= 1.0;
             }
@@ -100,6 +107,37 @@ namespace fiveSeconds
             Input.mousePos = (mouse.Position.X, Window.Height - mouse.Position.Y);
 
             View.CurrentView.HandleInputs(args);
+
+            if (Server == null && keyboard.IsKeyPressed(Keys.O))
+                InitServer();
+
+            if (Client == null && keyboard.IsKeyPressed(Keys.I))
+                InitClient();
+
+            if (Client == null && keyboard.IsKeyPressed(Keys.P))
+            {
+                if (Server == null) InitServer();
+                InitClient();
+            }
+
+            /* if (keyboard.IsKeyPressed(Keys.M))
+            {
+                ServerMessages.PlayerID(Server.bWriter, 0);
+            } */
+        }
+
+        public static void InitServer()
+        {
+            Server = new Server();
+            Server.Start();
+            Console.WriteLine("Start Server");
+        }
+
+        public static void InitClient()
+        {
+            Client = new Client();
+            Client.Start("localhost");
+            Console.WriteLine("Start Client");
         }
 
     }
