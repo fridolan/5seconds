@@ -18,7 +18,7 @@ namespace fiveSeconds
         public static bool ManuallyPaused = false;
         public static float InputTimeLeft = 0;
 
-        private static float InputPhaseLength = 10;
+        private static float InputPhaseLength = 6;
 
         public static void OnLoad()
         {

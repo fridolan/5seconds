@@ -102,12 +102,12 @@ namespace fiveSeconds
 
             Player newPlayer = AddPlayer(clientId, 50, 50);
             Entity entity = Game.CurrentStage.EntityList.Find(e => e is Aspect);
+            if(entity == null) throw new Exception("No player entity found");
             newPlayer.entity = entity;
  
             NetDataWriter writer = new();
             cWriters[clientId] = writer;
-            writer.Put((byte)SMessageType.PlayerID);
-            writer.Put(newPlayer.id);
+            ServerMessages.PlayerID(writer, newPlayer.id, entity);
         }
 
         public void OnClientDisconnected(int clientId)

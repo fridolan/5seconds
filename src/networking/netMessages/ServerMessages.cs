@@ -30,14 +30,16 @@ namespace fiveSeconds
             { SMessageType.PlayerID,(reader) =>
             {
                 Window.Client.playerId = reader.GetByte();
+                Window.Client.ControlledEntityID = reader.GetInt();
                 Console.WriteLine("Client Received Byte");
             } },
         };
 
-        public static void PlayerID(NetDataWriter writer, byte playerID)
+        public static void PlayerID(NetDataWriter writer, byte playerID, Entity entity)
         {
             writer.Put((byte)SMessageType.PlayerID);
             writer.Put(playerID);
+            writer.Put(entity.ID);
         }
     }
 

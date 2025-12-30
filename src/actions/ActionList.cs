@@ -5,11 +5,12 @@ namespace fiveSeconds
         public List<SAction> actions = [];
         public int NextActionIndex = 0;
         public bool Finished => actions.Count <= NextActionIndex;
+        public float timer = 0;
 
         public float GetNextTiming()
         {
             if (actions.Count > NextActionIndex)
-                return actions[NextActionIndex].NextActivationTime;
+                return timer + actions[NextActionIndex].NextActivationTime;
             else return float.MaxValue;
         }
 
@@ -17,7 +18,18 @@ namespace fiveSeconds
         {
             SAction action = actions[NextActionIndex];
             action.Execute();
-            if(action.Finished) NextActionIndex++;
+            if (action.Finished)
+            {
+                NextActionIndex++;
+                timer += action.TimePassed;
+            }
+        }
+
+        public void Reset()
+        {
+            actions.Clear();
+            NextActionIndex = 0;
+            timer = 0;
         }
     }
 }

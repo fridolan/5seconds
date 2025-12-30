@@ -11,6 +11,7 @@ namespace fiveSeconds
         public NetDataWriter writer;
 
         public byte playerId = 255;
+        public int ControlledEntityID;
 
         public Client()
         {

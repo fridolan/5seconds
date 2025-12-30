@@ -13,20 +13,14 @@ namespace fiveSeconds
         public int StepCount => Path.Count - 1;
         public float TimePerStep => TotalTime / StepCount;
         public int NextStep = 0;
-        private Entity entity;
 
         #region Activations
         public override void Begin()
         {
             Stage stage = Game.CurrentStage;
             Vector2i startingPosition = Path[0];
-
-            Entity? entity = stage.Entities[startingPosition.Y][startingPosition.X];
-
-            if (entity == null) throw new Exception("ASYNC no entity");
-            if (entity.ID != EntityID) throw new Exception("ASYNC wrong entityID");
-
-            this.entity = entity;
+            
+            Game.CurrentStage.MoveEntity(EntityID, Path[0]);
 
             NextStep = 1;
             NextActivationTime = NextStep * TimePerStep;
@@ -35,11 +29,12 @@ namespace fiveSeconds
 
         private void TakeStep()
         {
-            entity.Position = Path[NextStep];
+            //Console.WriteLine($"TakeStep {Path[NextStep]} {EntityID}");
+            Game.CurrentStage.MoveEntity(EntityID, Path[NextStep]);
             NextStep++;
             NextActivationTime = NextStep * TimePerStep;
 
-            if (NextStep >= StepCount) Finished = true;
+            if (NextStep >= Path.Count) Finished = true;
         }
         #endregion
 

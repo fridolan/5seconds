@@ -82,7 +82,7 @@ namespace fiveSeconds
             SpecialTileMesh.Clear();
             if (stage.ValidTilePos(HoveredTile))
             {
-                SpecialTileMesh.RectAt(HoveredTile, 0, (1,1));
+                SpecialTileMesh.RectAt(HoveredTile, 0, (1, 1));
             }
             SpecialTileMesh.UploadToGPU();
 
@@ -153,16 +153,46 @@ namespace fiveSeconds
         {
             float dT = (float)args.Time;
 
+
             KeyboardState keyboard = Input.keyboard;
             MouseState mouse = Input.mouse;
 
             Stage stage = Game.CurrentStage;
 
             HoveredTile = ScreenToTilePosition(mouse.Position, 0);
+            Vector2 hoveredTileF = ScreenToTilePositionFloat(mouse.Position, 0);
+            bool validHover = stage.ValidTilePos(HoveredTile);
             //Console.WriteLine($"mTP {HoveredTile}");
+
+            if (Window.Client == null) return;
+
+            Entity playerEntity = stage.EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
+
+            if (validHover && playerEntity != null)
+            {
+                if (mouse.IsButtonPressed(MouseButton.Left))
+                {
+                    MoveEntityAction action = new()
+                    {
+                        CancelOnDisplace = true,
+                        EntityID = Window.Client.ControlledEntityID,
+                        TotalTime = 3,
+                        Path = stage.GetPathTo(playerEntity, HoveredTile)
+                    };
+
+                    Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
+
+                    playerEntity.ActionList.actions.Add(action);
+                }
+            }
         }
 
         private Vector2i ScreenToTilePosition(Vector2 mousePos, float angle)
+        {
+            return (Vector2i)ScreenToTilePositionFloat(mousePos, angle);
+        }
+
+        private Vector2 ScreenToTilePositionFloat(Vector2 mousePos, float angle)
         {
             Vector2 m = (Window.Width / 2, Window.Height / 2) + RotateVector(new Vector2(mousePos.X, Window.Height - mousePos.Y) - (Window.Width / 2, Window.Height / 2), angle);
             Vector2 offset = CameraPos;
@@ -177,7 +207,7 @@ namespace fiveSeconds
 
             //Console.WriteLine($"Tile at {tile} {mousePos}");
 
-            return ((int)tile.X, (int)tile.Y);
+            return (tile.X, tile.Y);
         }
 
         private static Vector2 RotateVector(Vector2 vec, float angle)
