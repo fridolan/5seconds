@@ -12,31 +12,31 @@ namespace fiveSeconds
         public static Keybind LEFTCLICK = new()
         {
             MouseButtons = [(int)MouseButton.Left],
-            KeyboardButtons = [(int)Keys.A],
+            KeyboardButtons = [],
         };
 
         public static Keybind UP = new()
         {
             MouseButtons = [],
-            KeyboardButtons = [],
+            KeyboardButtons = [(int)Keys.W],
         };
 
         public static Keybind DOWN = new()
         {
             MouseButtons = [],
-            KeyboardButtons = [],
+            KeyboardButtons = [(int)Keys.S],
         };
 
         public static Keybind LEFT = new()
         {
             MouseButtons = [],
-            KeyboardButtons = [],
+            KeyboardButtons = [(int)Keys.A],
         };
 
         public static Keybind RIGHT = new()
         {
             MouseButtons = [],
-            KeyboardButtons = [],
+            KeyboardButtons = [(int)Keys.D],
         };
 
         public static Keybind ONE = new()

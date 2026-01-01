@@ -172,15 +172,17 @@ namespace fiveSeconds
             {
                 if (Keybind.LEFTCLICK.IsPressed())
                 {
+                    bool relative = Keybind.SHIFT.IsDown();
                     MoveEntityAction action = new()
                     {
                         CancelOnDisplace = true,
-                        EntityID = Window.Client.ControlledEntityID,
-                        TotalTime = 3,
-                        Path = stage.GetPathTo(playerEntity, HoveredTile)
+                        EntityID = playerEntity.ID,
+                        Relative = relative,
+                        Goal = HoveredTile,
+                        Start = playerEntity.Position,
                     };
 
-                    Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
+                    //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
 
                     playerEntity.ActionList.actions.Add(action);
                 }

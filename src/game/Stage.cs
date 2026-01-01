@@ -15,7 +15,6 @@ namespace fiveSeconds
         public bool EntityMeshDirty = false;
         public bool TileMeshDirty = false;
 
-
         private float roundTime = 0;
         private List<ActionList> actionLists;
         public void Tick(float dT, out bool done)
@@ -110,8 +109,10 @@ namespace fiveSeconds
             return true;
         }
 
-        public bool MoveEntity(Entity entity, Vector2i newPosition)
+        public bool MoveEntity(Entity entity, Vector2i pos)
         {
+            Vector2i newPosition = pos;
+
             if (!ValidTilePos(newPosition)) return false;
 
             Vector2i oldPosition = entity.Position;
@@ -154,7 +155,7 @@ namespace fiveSeconds
         public List<Vector2i> GetPathTo(Entity entity, Vector2i goal)
         {
             Vector2i origin = entity.Position;
-            Console.WriteLine($"GetPathTo {origin}->{goal}");
+            //Console.WriteLine($"GetPathTo {origin}->{goal}");
 
             List<Vector2i> path = [origin];
             Vector2i difference = goal - origin;
@@ -170,6 +171,14 @@ namespace fiveSeconds
             }
 
             return path;
+        }
+
+        public List<Vector2i> GetPathTo(int entityID, Vector2i goal)
+        {
+            Entity entity = Entity.GetByID(entityID);
+            if(entity == null) return [];
+
+            return GetPathTo(entity, goal);
         }
 
         #endregion

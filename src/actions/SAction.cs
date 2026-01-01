@@ -8,11 +8,15 @@ namespace fiveSeconds
         public float NextActivationTime = 0;
         public Action NextActivation;
         public bool Finished = false;
+        public bool Begun = false;
 
         public void Execute()
         {
             float now = NextActivationTime;
-            if (TimePassed == 0) Begin();
+            if (Begun == false) {
+                Begin();
+                Begun = true;
+            }
             else NextActivation();
             TimePassed = now;
         }

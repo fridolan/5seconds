@@ -7,53 +7,71 @@ namespace fiveSeconds
     {
         public int EntityID;
         public bool CancelOnDisplace = true;
-        public List<Vector2i> Path = [];
-        public float TotalTime;
+        public bool Relative = false;
+        public int ToEntityID = -1;
+        public Vector2i Start;
+        public Vector2i Goal;
+        public float TimePerStep = 0.5f;
 
-        public int StepCount => Path.Count - 1;
-        public float TimePerStep => TotalTime / StepCount;
-        public int NextStep = 0;
+        private int StepsTaken = 0;
+        private Entity ToEntity;
 
         #region Activations
         public override void Begin()
         {
             Stage stage = Game.CurrentStage;
-            Vector2i startingPosition = Path[0];
-            
-            Game.CurrentStage.MoveEntity(EntityID, Path[0]);
+            Entity entity = Entity.GetByID(EntityID);
+            if(entity == null) throw new Exception("MoveEntityAction no entity");
 
-            NextStep = 1;
-            NextActivationTime = NextStep * TimePerStep;
+            if(Relative) Goal = Goal - Start + entity.Position;
+            if(ToEntityID != -1)
+            {
+                ToEntity = Entity.GetByID(ToEntityID);
+                if(ToEntity == null) throw new Exception("MoveEntityAction no toEntity"); 
+                Goal = ToEntity.Position;
+            }
+
+            List<Vector2i> path = stage.GetPathTo(EntityID, Goal);
+            Vector2i startingPosition = path[0];
+
+            stage.MoveEntity(EntityID, path[0]);
+            NextActivationTime = (StepsTaken + 1) * TimePerStep;
             NextActivation = TakeStep;
         }
 
         private void TakeStep()
         {
             //Console.WriteLine($"TakeStep {Path[NextStep]} {EntityID}");
-            Game.CurrentStage.MoveEntity(EntityID, Path[NextStep]);
-            NextStep++;
-            NextActivationTime = NextStep * TimePerStep;
+            if(ToEntity != null) Goal = ToEntity.Position;
+            List<Vector2i> path = Game.CurrentStage.GetPathTo(EntityID, Goal);
+            if (path.Count < 2)
+            {
+                Finished = true;
+                return;
+            }
+            Game.CurrentStage.MoveEntity(EntityID, path[1]);
+            StepsTaken++;
+            NextActivationTime = (StepsTaken + 1) * TimePerStep;
 
-            if (NextStep >= Path.Count) Finished = true;
+            if (path.Count <= 2)
+            {
+                Finished = true;
+                return;
+            }
         }
         #endregion
 
         #region Networking
         public static MoveEntityAction FromReader(NetDataReader reader)
         {
-            int pathLength = reader.GetInt();
-            List<Vector2i> path = [];
-            for (int i = 0; i < pathLength; i++)
-            {
-                Vector2i pos = (reader.GetInt(), reader.GetInt());
-                path.Add(pos);
-            }
             MoveEntityAction action = new()
             {
+                Start = (reader.GetInt(), reader.GetInt()),
+                Goal = (reader.GetInt(), reader.GetInt()),
+                TimePerStep = reader.GetFloat(),
+                Relative = reader.GetBool(),
                 EntityID = reader.GetInt(),
                 CancelOnDisplace = reader.GetBool(),
-                TotalTime = reader.GetInt(),
-                Path = path,
             };
 
             return action;
@@ -61,16 +79,12 @@ namespace fiveSeconds
 
         public override void ToWriter(NetDataWriter writer)
         {
-            writer.Put(Path.Count);
-            for (int i = 0; i < Path.Count; i++)
-            {
-                Vector2i pos = Path[i];
-                writer.Put(pos.X);
-                writer.Put(pos.Y);
-            }
+            writer.Put(Start.X); writer.Put(Start.Y);
+            writer.Put(Goal.X); writer.Put(Goal.Y);
+            writer.Put(TimePerStep);
+            writer.Put(Relative);
             writer.Put(EntityID);
             writer.Put(CancelOnDisplace);
-            writer.Put(TotalTime);
         }
         #endregion
 
