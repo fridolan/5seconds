@@ -13,7 +13,8 @@ namespace fiveSeconds
         public void Execute()
         {
             float now = NextActivationTime;
-            if (Begun == false) {
+            if (Begun == false)
+            {
                 Begin();
                 Begun = true;
             }
@@ -22,6 +23,95 @@ namespace fiveSeconds
         }
 
         public abstract void Begin();
-        public abstract void ToWriter(NetDataWriter writer);
+
+        public static SAction FromReader(NetDataReader reader)
+        {
+            
+            int typeIndex = reader.GetInt();
+            SAction action = GetInstance[typeIndex]();
+
+            action.TimePassed = reader.GetFloat();
+            action.NextActivationTime = reader.GetFloat();
+            action.Finished = reader.GetBool();
+            action.Begun = reader.GetBool();
+
+            Console.WriteLine($"SAction from reader, typeI {typeIndex}, TimePassed {action.TimePassed}, NextActivationTime {action.NextActivationTime}, Finished {action.Finished}, Begun {action.Begun}");
+
+            if (action is IStartGoalInput sgi)
+            {
+                sgi.Start = (reader.GetInt(), reader.GetInt());
+                sgi.Goal = (reader.GetInt(), reader.GetInt());
+            }
+
+            if (action is IEntityIDInput ei)
+            {
+                ei.EntityID = reader.GetInt();
+            }
+
+            if (action is ICancelOnDisplaceInput cod)
+            {
+                cod.CancelOnDisplace = reader.GetBool();
+            }
+
+            if (action is IRelativeInput r)
+            {
+                r.Relative = reader.GetBool();
+            }
+
+            if (action is IToEntityIDInput tei)
+            {
+                tei.ToEntityID = reader.GetInt();
+            }
+
+            return action;
+        }
+
+        public void Write(NetDataWriter writer)
+        {
+            SAction action = this;
+            
+            writer.Put(GetTypeIndex[action.GetType()]);
+
+            writer.Put(TimePassed);
+            writer.Put(NextActivationTime);
+            writer.Put(Finished);
+            writer.Put(Begun);
+
+            if (action is IStartGoalInput sgi)
+            {
+                writer.Put(sgi.Start.X);
+                writer.Put(sgi.Start.Y);
+                writer.Put(sgi.Goal.X);
+                writer.Put(sgi.Goal.Y);
+            }
+
+            if (action is IEntityIDInput ei)
+            {
+                writer.Put(ei.EntityID);
+            }
+
+            if (action is ICancelOnDisplaceInput cod)
+            {
+                writer.Put(cod.CancelOnDisplace);
+            }
+
+            if (action is IRelativeInput r)
+            {
+                writer.Put(r.Relative);
+            }
+
+            if (action is IToEntityIDInput tei)
+            {
+                writer.Put(tei.ToEntityID);
+            }
+        }
+
+        public static Dictionary<Type, int> GetTypeIndex = new(){
+          { typeof(MoveEntityAction), 0 },
+        };
+
+        public static List<Func<SAction>> GetInstance = [
+            () => new MoveEntityAction()
+        ];
     }
 }

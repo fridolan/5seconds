@@ -12,14 +12,37 @@ namespace fiveSeconds
 
     public enum CMessageType : byte
     {
+        FullActionList
     }
 
     public static class ClientMessages
     {
-        public static Dictionary<CMessageType, Action<NetDataReader>> MessageHandlers = new()
+        public static Dictionary<CMessageType, Action<NetDataReader, byte>> MessageHandlers = new()
         {
-            
+            { CMessageType.FullActionList, rFullActionList},
         };
+
+        public static void rFullActionList(NetDataReader reader, byte playerByte)
+        {
+            ActionList actionList = ActionList.FromReader(reader);
+            Player? player = Server.GetPlayerByByte(playerByte);
+            if (player == null) return;
+
+            if (Game.State == GameState.INPUT)
+            {
+                player.entity.ActionList = actionList;
+            }
+            else
+            {
+                Console.WriteLine("Ignored Client Input, as its not Input Phase anymore");
+            }
+        }
+
+        public static void FullActionList(NetDataWriter writer, ActionList actionList)
+        {
+            writer.Put((byte)CMessageType.FullActionList);
+            actionList.Write(writer);
+        }
     }
 
 }

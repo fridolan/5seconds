@@ -126,7 +126,7 @@ namespace fiveSeconds
 
                 if(ClientMessages.MessageHandlers.TryGetValue((CMessageType)type, out var handler))
                 {
-                    handler(reader);
+                    handler(reader, playerId);
                 }
                 else
                 {
@@ -143,6 +143,12 @@ namespace fiveSeconds
         public static Player GetPlayerByClientId(int clientId)
         {
             return players[CIdToPId[clientId]];
+        }
+
+        public static Player? GetPlayerByByte(byte playerByte)
+        {
+            players.TryGetValue(playerByte, out Player player);
+            return player;
         }
     }
 }

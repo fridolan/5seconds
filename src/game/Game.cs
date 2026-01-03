@@ -20,6 +20,8 @@ namespace fiveSeconds
 
         private static float InputPhaseLength = 6;
 
+        private static bool firstUpdateTick = false;
+
         public static void OnLoad()
         {
 
@@ -29,7 +31,7 @@ namespace fiveSeconds
         {
             float dT = (float)args.Time;
             if (State == GameState.INPUT) Input(dT);
-            else if (State == GameState.UPDATE) Update(dT);
+            else if (State == GameState.UPDATE) Update(dT); // TODO :((( Viel Spaß beim Client / Server separieren
             else if (State == GameState.PAUSE) Pause(dT);
         }
 
@@ -38,6 +40,7 @@ namespace fiveSeconds
             InputTimeLeft -= dT;
             if (InputTimeLeft <= 0)
             {
+                firstUpdateTick = true;
                 State = GameState.UPDATE;
                 return;
             }
@@ -45,11 +48,12 @@ namespace fiveSeconds
 
         private static void Update(float dT)
         {
-            CurrentStage.Tick(dT, out bool done);
+            CurrentStage.Tick(dT, firstUpdateTick, out bool done);
             if(done) {
                 State = GameState.INPUT;
                 InputTimeLeft = InputPhaseLength;
             }
+            firstUpdateTick = false;
         }
 
         public static void Pause(float dT)

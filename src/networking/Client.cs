@@ -53,6 +53,7 @@ namespace fiveSeconds
             while (reader.AvailableBytes > 0)
             {
                 byte type = reader.GetByte();
+                Console.WriteLine($"Byte: {type}");
 
                 if(ServerMessages.MessageHandlers.TryGetValue((SMessageType)type, out var handler))
                 {

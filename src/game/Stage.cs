@@ -17,11 +17,24 @@ namespace fiveSeconds
 
         private float roundTime = 0;
         private List<ActionList> actionLists;
-        public void Tick(float dT, out bool done)
+
+        public List<ActionList> actionListsFromServer = [];
+        public void Tick(float dT, bool first, out bool done)
         {
             roundTime += dT;
             List<ActionList> allActionLists = [.. EntityList.Select((e) => e.ActionList)];
-            actionLists = [.. allActionLists.Where(l => l.Finished == false)];
+
+            if (Window.Server == null)
+            {
+                actionLists = [.. allActionLists.Where(l => !l.Finished)];
+            }
+            else
+            {
+                actionLists = [.. actionListsFromServer.Where(l => !l.Finished)];
+            }
+
+            if (first && Window.Server != null) ServerMessages.ActionLists(Window.Server.bWriter, actionLists);
+
             if (actionLists.Count > 0)
             {
                 //Console.WriteLine($"ActionLists remaining {}");
@@ -37,6 +50,7 @@ namespace fiveSeconds
                 Console.WriteLine("Round over");
                 done = true;
                 roundTime = 0;
+
                 foreach (var list in allActionLists)
                 {
                     list.Reset();
@@ -128,7 +142,7 @@ namespace fiveSeconds
         public bool MoveEntity(int entityID, Vector2i newPosition)
         {
             Entity entity = Entity.GetByID(entityID);
-            if(entity == null) return false;
+            if (entity == null) return false;
             return MoveEntity(entity, newPosition);
         }
 
@@ -176,7 +190,7 @@ namespace fiveSeconds
         public List<Vector2i> GetPathTo(int entityID, Vector2i goal)
         {
             Entity entity = Entity.GetByID(entityID);
-            if(entity == null) return [];
+            if (entity == null) return [];
 
             return GetPathTo(entity, goal);
         }
