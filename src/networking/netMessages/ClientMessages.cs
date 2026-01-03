@@ -22,8 +22,16 @@ namespace fiveSeconds
             { CMessageType.FullActionList, rFullActionList},
         };
 
+        public static void FullActionList(NetDataWriter writer, ActionList actionList)
+        {
+            writer.Put((byte)CMessageType.FullActionList);
+            Console.WriteLine("Client sends ActionList");
+            actionList.Write(writer);
+        }
+
         public static void rFullActionList(NetDataReader reader, byte playerByte)
         {
+            Console.WriteLine("Server receives Client ActionList");
             ActionList actionList = ActionList.FromReader(reader);
             Player? player = Server.GetPlayerByByte(playerByte);
             if (player == null) return;
@@ -36,12 +44,6 @@ namespace fiveSeconds
             {
                 Console.WriteLine("Ignored Client Input, as its not Input Phase anymore");
             }
-        }
-
-        public static void FullActionList(NetDataWriter writer, ActionList actionList)
-        {
-            writer.Put((byte)CMessageType.FullActionList);
-            actionList.Write(writer);
         }
     }
 

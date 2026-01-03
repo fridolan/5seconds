@@ -47,6 +47,8 @@ namespace fiveSeconds
         {
             _net = new LiteNetLibTransport();
             _net.SetHandler(this);
+            Game = new Game();
+            Game.OnLoad();
         }
 
         public void Start()

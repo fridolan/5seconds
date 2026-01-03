@@ -184,7 +184,7 @@ namespace fiveSeconds
 
                     //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
 
-                    playerEntity.ActionList.actions.Add(action);
+                    playerEntity.ActionList.AddActionClient(action);
                 }
             }
         }

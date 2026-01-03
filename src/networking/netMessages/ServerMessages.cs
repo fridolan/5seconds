@@ -70,7 +70,8 @@ namespace fiveSeconds
                 actionLists.Add(list);
             }
 
-            Client.Game.CurrentStage.actionListsFromServer = actionLists;
+            // TODO:
+            //Client.Game.CurrentStage.actionListsFromServer = actionLists;
         }
 
         public static void SetGameState(NetDataWriter writer, GameState state, float time)

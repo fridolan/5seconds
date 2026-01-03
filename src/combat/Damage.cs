@@ -14,7 +14,7 @@ namespace fiveSeconds
             Damage damage = combatContext.Damage;
             DamageType type = damage.Type;
             Stats stats = target.Stats;
-            StatusEffects status_effects = target.Stats.StatusEffects;
+            float[] status_effects = target.Stats.StatusEffects;
 
             bool isPhysical = type == DamageType.MELEE || type == DamageType.RANGED;
             bool isMagic = type == DamageType.FIRE || type == DamageType.FROST || type == DamageType.LIGHTNING;
@@ -29,37 +29,37 @@ namespace fiveSeconds
                 resultingAmount *= armor_mult;
             }
 
-            if (type == DamageType.FIRE && status_effects.Freezing != 0)
+            if (type == DamageType.FIRE && status_effects[StatusEffect.Freezing] != 0)
             { // Extra fire damage on frost
                 float rate = 1 / 4f;
                 float maxBonus = resultingAmount * 0.5f;
 
-                float bonus = Math.Min(status_effects.Freezing * rate, maxBonus);
+                float bonus = Math.Min(status_effects[StatusEffect.Freezing] * rate, maxBonus);
 
                 resultingAmount += bonus;
-                status_effects.Freezing -= bonus / rate;
+                status_effects[StatusEffect.Freezing] -= bonus / rate;
             }
 
-            if (type == DamageType.FIRE && status_effects.Wet != 0)
+            if (type == DamageType.FIRE && status_effects[StatusEffect.Wet] != 0)
             { // Lower fire damage on wetness
                 float rate = 1 / 4f;
                 float maxMalus = resultingAmount * 0.5f;
 
-                float malus = Math.Min(status_effects.Wet * rate, maxMalus);
+                float malus = Math.Min(status_effects[StatusEffect.Wet] * rate, maxMalus);
 
                 resultingAmount -= malus;
-                status_effects.Wet -= malus / rate;
+                status_effects[StatusEffect.Wet] -= malus / rate;
             }
 
-            if (type == DamageType.LIGHTNING && status_effects.Wet != 0)
+            if (type == DamageType.LIGHTNING && status_effects[StatusEffect.Wet] != 0)
             { // Extra lightning damage on wetness
                 float rate = 1 / 3f;
                 float maxBonus = resultingAmount * 0.25f;
 
-                float bonus = Math.Min(status_effects.Wet * rate, maxBonus);
+                float bonus = Math.Min(status_effects[StatusEffect.Wet] * rate, maxBonus);
 
                 resultingAmount += bonus;
-                status_effects.Wet -= bonus / rate;
+                status_effects[StatusEffect.Wet] -= bonus / rate;
             }
 
             target.Stats.CurrentHealth -= resultingAmount;
