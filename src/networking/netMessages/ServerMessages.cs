@@ -22,7 +22,8 @@ namespace fiveSeconds
     {
         PlayerID,
         ActionLists,
-        SetGameState
+        SetGameState,
+        Entities
     }
 
     public static class ServerMessages
@@ -31,6 +32,8 @@ namespace fiveSeconds
         {
             { SMessageType.PlayerID, rPlayerID },
             { SMessageType.ActionLists, rActionlists },
+            { SMessageType.SetGameState, rGameState },
+            { SMessageType.Entities, rEntities },
         };
 
         public static void PlayerID(NetDataWriter writer, byte playerID, Entity entity)
@@ -88,6 +91,29 @@ namespace fiveSeconds
             if(Client.Game.State == GameState.INPUT)
             {
                 Client.Game.InputTimeLeft = time;
+            }
+        }
+
+        public static void Entities(NetDataWriter writer, List<Entity> entities)
+        {
+            writer.Put((byte)SMessageType.Entities);
+            writer.Put(entities.Count);
+            for(int i = 0; i < entities.Count; i++)
+            {
+                entities[i].Write(writer);
+            }
+        }
+
+        public static void rEntities(NetDataReader reader)
+        {
+            Stage stage = Client.Game.CurrentStage;
+            stage.ClearEntities();
+
+            int entityCount = reader.GetInt();
+            for(int i = 0; i< entityCount; i++)
+            {
+                Entity entity = Entity.FromReader(reader);
+                stage.AddEntity(entity);
             }
         }
     }

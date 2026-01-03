@@ -64,9 +64,9 @@ namespace fiveSeconds
             return type.Index;
         }
 
-        public static float[] FilledArray(float value)
+        public static int[] FilledArray(int value)
         {
-            float[] array = new float[TypeCount];
+            int[] array = new int[TypeCount];
             for (int i = 0; i < array.Length; i++)
                 array[i] = value;
 

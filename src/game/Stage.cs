@@ -117,6 +117,21 @@ namespace fiveSeconds
             return true;
         }
 
+        public void ClearEntities()
+        {
+            Entities = new Entity[Height][];
+            for (int i = 0; i < Height; i++)
+            {
+                Entities[i] = new Entity[Width];
+                for (int j = 0; j < Width; j++)
+                {
+                    Entities[i][j] = null;
+                }
+            }
+            EntityList.Clear();
+            EntityMeshDirty = true;
+        }
+
         public bool MoveEntity(Entity entity, Vector2i pos)
         {
             Vector2i newPosition = pos;

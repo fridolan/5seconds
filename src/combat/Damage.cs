@@ -2,64 +2,67 @@ namespace fiveSeconds
 {
     public class Damage
     {
-        public float Amount;
-        public float ResultingAmount;
+        public int Amount;
+        public int ResultingAmount;
         public DamageType Type;
 
 
-        public static float DamageC(CombatContext combatContext)
+        public static int DamageC(CombatContext combatContext)
         {
             ICombat target = combatContext.Target;
             ICombat source = combatContext.Source;
             Damage damage = combatContext.Damage;
             DamageType type = damage.Type;
             Stats stats = target.Stats;
-            float[] status_effects = target.Stats.StatusEffects;
+            int[] status_effects = target.Stats.StatusEffects;
 
             bool isPhysical = type == DamageType.MELEE || type == DamageType.RANGED;
             bool isMagic = type == DamageType.FIRE || type == DamageType.FROST || type == DamageType.LIGHTNING;
-            float resultingAmount = damage.Amount;
+            int resultingAmount = damage.Amount;
 
             resultingAmount *= source.Stats.DamageDealMults[type];
+            resultingAmount /= 100;
             resultingAmount += source.Stats.DamageDealAdds[type];
 
             if (isPhysical) // Armor
             {
-                float armor_mult = 1 - stats.Armor / (stats.Armor + 100);
-                resultingAmount *= armor_mult;
+                int divisor = stats.Armor + 100;
+                int dmgPerc = 100 * stats.Armor / divisor;
+                resultingAmount *= dmgPerc;
+                resultingAmount /= 100;
             }
 
             if (type == DamageType.FIRE && status_effects[StatusEffect.Freezing] != 0)
             { // Extra fire damage on frost
-                float rate = 1 / 4f;
-                float maxBonus = resultingAmount * 0.5f;
+                int ratePerc = 100 / 4;
+                int maxBonus = resultingAmount / 2;
 
-                float bonus = Math.Min(status_effects[StatusEffect.Freezing] * rate, maxBonus);
+                int bonus = Math.Min(status_effects[StatusEffect.Freezing] * ratePerc / 100, maxBonus);
 
                 resultingAmount += bonus;
-                status_effects[StatusEffect.Freezing] -= bonus / rate;
+                status_effects[StatusEffect.Freezing] -= bonus * 100 / ratePerc;
             }
 
             if (type == DamageType.FIRE && status_effects[StatusEffect.Wet] != 0)
             { // Lower fire damage on wetness
-                float rate = 1 / 4f;
-                float maxMalus = resultingAmount * 0.5f;
+                int ratePerc = 100 / 4;
+                int maxMalus = resultingAmount / 2;
 
-                float malus = Math.Min(status_effects[StatusEffect.Wet] * rate, maxMalus);
+                int malus = Math.Min(status_effects[StatusEffect.Wet] * ratePerc / 100, maxMalus);
 
                 resultingAmount -= malus;
-                status_effects[StatusEffect.Wet] -= malus / rate;
+                status_effects[StatusEffect.Wet] -= malus * 100 / ratePerc;
             }
 
             if (type == DamageType.LIGHTNING && status_effects[StatusEffect.Wet] != 0)
             { // Extra lightning damage on wetness
-                float rate = 1 / 3f;
-                float maxBonus = resultingAmount * 0.25f;
+                int ratePerc = 100 / 3;
+                int maxBonus = resultingAmount / 4;
 
-                float bonus = Math.Min(status_effects[StatusEffect.Wet] * rate, maxBonus);
+                int bonus = Math.Min(status_effects[StatusEffect.Wet] * ratePerc / 100, maxBonus);
 
                 resultingAmount += bonus;
-                status_effects[StatusEffect.Wet] -= bonus / rate;
+                status_effects[StatusEffect.Wet] -= bonus * 100 / ratePerc;
             }
 
             target.Stats.CurrentHealth -= resultingAmount;
