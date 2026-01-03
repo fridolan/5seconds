@@ -13,6 +13,8 @@ namespace fiveSeconds
         public byte playerId = 255;
         public int ControlledEntityID;
 
+        public static Game Game;
+
         public Client()
         {
             _net = new LiteNetLibTransport();

@@ -40,7 +40,7 @@ namespace fiveSeconds
         private static string PickWeightedRandom(List<WeightedString> options)
         {
             int totalWeight = options.Sum(o => o.Weight);
-            int choice = Game.Random.Next(totalWeight);
+            int choice = Client.Game.Random.Next(totalWeight);
             // Console.WriteLine($"Total weight {totalWeight} {choice}");
             foreach (var o in options)
             {

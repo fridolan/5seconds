@@ -28,7 +28,7 @@ namespace fiveSeconds
             Player? player = Server.GetPlayerByByte(playerByte);
             if (player == null) return;
 
-            if (Game.State == GameState.INPUT)
+            if (Server.Game.State == GameState.INPUT)
             {
                 player.entity.ActionList = actionList;
             }

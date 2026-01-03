@@ -4,6 +4,8 @@ namespace fiveSeconds
 {
     public abstract class Stage
     {
+        public Game Game;
+
         public Tile[][] Tiles;
         public Entity?[][] Entities;
         public int Width;
@@ -18,22 +20,14 @@ namespace fiveSeconds
         private float roundTime = 0;
         private List<ActionList> actionLists;
 
-        public List<ActionList> actionListsFromServer = [];
         public void Tick(float dT, bool first, out bool done)
         {
             roundTime += dT;
             List<ActionList> allActionLists = [.. EntityList.Select((e) => e.ActionList)];
 
-            if (Window.Server == null)
-            {
-                actionLists = [.. allActionLists.Where(l => !l.Finished)];
-            }
-            else
-            {
-                actionLists = [.. actionListsFromServer.Where(l => !l.Finished)];
-            }
+            actionLists = [.. allActionLists.Where(l => !l.Finished)];
 
-            if (first && Window.Server != null) ServerMessages.ActionLists(Window.Server.bWriter, actionLists);
+            if (first && Game == Server.Game) ServerMessages.ActionLists(Window.Server.bWriter, actionLists);
 
             if (actionLists.Count > 0)
             {
@@ -41,7 +35,7 @@ namespace fiveSeconds
                 ActionList nextList = actionLists.MinBy(l => l.GetNextTiming());
                 if (nextList != null && nextList.GetNextTiming() <= roundTime)
                 {
-                    nextList.Act();
+                    nextList.Act(Game);
                 }
                 done = false;
             }
@@ -141,7 +135,7 @@ namespace fiveSeconds
 
         public bool MoveEntity(int entityID, Vector2i newPosition)
         {
-            Entity entity = Entity.GetByID(entityID);
+            Entity entity = GetEntityByID(entityID);
             if (entity == null) return false;
             return MoveEntity(entity, newPosition);
         }
@@ -189,10 +183,15 @@ namespace fiveSeconds
 
         public List<Vector2i> GetPathTo(int entityID, Vector2i goal)
         {
-            Entity entity = Entity.GetByID(entityID);
+            Entity entity = GetEntityByID(entityID);
             if (entity == null) return [];
 
             return GetPathTo(entity, goal);
+        }
+
+        public Entity? GetEntityByID(int id)
+        {
+            return Game.CurrentStage.EntityList.Find(e => e.ID == id);
         }
 
         #endregion

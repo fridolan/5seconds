@@ -22,6 +22,8 @@ namespace fiveSeconds
         public double stateTickTimer = 0;
         public double stateTickInterval = 1 / 10f;
 
+        public static Game Game;
+
         public static Player AddPlayer(int clientId, int x, int y)
         {
             byte id = idCounter++;

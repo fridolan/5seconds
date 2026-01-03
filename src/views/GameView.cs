@@ -33,9 +33,9 @@ namespace fiveSeconds
 
         public void RenderStage()
         {
-            if (Game.CurrentStage == null) return;
+            if (Client.Game.CurrentStage == null) return;
 
-            Stage stage = Game.CurrentStage;
+            Stage stage = Client.Game.CurrentStage;
 
             if (stage.TileMeshDirty) stage.CreateTileMesh();
             if (stage.EntityMeshDirty) stage.CreateEntityMesh();
@@ -157,7 +157,7 @@ namespace fiveSeconds
             KeyboardState keyboard = Input.keyboard;
             MouseState mouse = Input.mouse;
 
-            Stage stage = Game.CurrentStage;
+            Stage stage = Client.Game.CurrentStage;
 
             HoveredTile = ScreenToTilePosition(mouse.Position, 0);
             Vector2 hoveredTileF = ScreenToTilePositionFloat(mouse.Position, 0);

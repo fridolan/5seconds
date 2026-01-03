@@ -16,16 +16,16 @@ namespace fiveSeconds
         private Entity ToEntity;
 
         #region Activations
-        public override void Begin()
+        public override void Begin(Game game)
         {
-            Stage stage = Game.CurrentStage;
-            Entity entity = Entity.GetByID(EntityID);
+            Stage stage = game.CurrentStage;
+            Entity entity = stage.GetEntityByID(EntityID);
             if (entity == null) throw new Exception("MoveEntityAction no entity");
 
             if (Relative) Goal = Goal - Start + entity.Position;
             if (ToEntityID != -1)
             {
-                ToEntity = Entity.GetByID(ToEntityID);
+                ToEntity = stage.GetEntityByID(ToEntityID);
                 if (ToEntity == null) throw new Exception("MoveEntityAction no toEntity");
                 Goal = ToEntity.Position;
             }
@@ -38,17 +38,17 @@ namespace fiveSeconds
             NextActivation = TakeStep;
         }
 
-        private void TakeStep()
+        private void TakeStep(Game game)
         {
             //Console.WriteLine($"TakeStep {Path[NextStep]} {EntityID}");
             if (ToEntity != null) Goal = ToEntity.Position;
-            List<Vector2i> path = Game.CurrentStage.GetPathTo(EntityID, Goal);
+            List<Vector2i> path = game.CurrentStage.GetPathTo(EntityID, Goal);
             if (path.Count < 2)
             {
                 Finished = true;
                 return;
             }
-            Game.CurrentStage.MoveEntity(EntityID, path[1]);
+            game.CurrentStage.MoveEntity(EntityID, path[1]);
             StepsTaken++;
             NextActivationTime = (StepsTaken + 1) * TimePerStep;
 

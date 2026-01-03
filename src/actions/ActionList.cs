@@ -16,10 +16,10 @@ namespace fiveSeconds
             else return float.MaxValue;
         }
 
-        public void Act()
+        public void Act(Game game)
         {
             SAction action = actions[NextActionIndex];
-            action.Execute();
+            action.Execute(game);
             if (action.Finished)
             {
                 NextActionIndex++;

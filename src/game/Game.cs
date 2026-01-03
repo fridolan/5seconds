@@ -9,25 +9,28 @@ namespace fiveSeconds
         PAUSE
     }
 
-    public static class Game
+    public class Game
     {
-        public static GameState State;
-        public static Random Random = new();
-        public static Stage CurrentStage = new Cave1();
+        public GameState State;
+        public Random Random = new();
+        public Stage CurrentStage;
 
-        public static bool ManuallyPaused = false;
-        public static float InputTimeLeft = 0;
+        public bool ManuallyPaused = false;
+        public float InputTimeLeft = 0;
 
-        private static float InputPhaseLength = 6;
+        private float InputPhaseLength = 6;
 
-        private static bool firstUpdateTick = false;
+        private bool firstUpdateTick = false;
 
-        public static void OnLoad()
+        public void OnLoad()
         {
-
+            CurrentStage = new Cave1()
+            {
+                Game = this,
+            };
         }
 
-        public static void OnUpdateFrame(FrameEventArgs args)
+        public void OnUpdateFrame(FrameEventArgs args)
         {
             float dT = (float)args.Time;
             if (State == GameState.INPUT) Input(dT);
@@ -35,7 +38,7 @@ namespace fiveSeconds
             else if (State == GameState.PAUSE) Pause(dT);
         }
 
-        private static void Input(float dT)
+        private void Input(float dT)
         {
             InputTimeLeft -= dT;
             if (InputTimeLeft <= 0)
@@ -46,19 +49,20 @@ namespace fiveSeconds
             }
         }
 
-        private static void Update(float dT)
+        private void Update(float dT)
         {
             CurrentStage.Tick(dT, firstUpdateTick, out bool done);
-            if(done) {
+            if (done)
+            {
                 State = GameState.INPUT;
                 InputTimeLeft = InputPhaseLength;
             }
             firstUpdateTick = false;
         }
 
-        public static void Pause(float dT)
+        public void Pause(float dT)
         {
-            
+
         }
     }
 }

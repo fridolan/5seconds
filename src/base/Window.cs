@@ -51,7 +51,8 @@ namespace fiveSeconds
             TextHandler.renderer = new TextHandler("fonts/Jersey15-Regular.ttf", 64, Width, Height);
 
             View.GameView.OnLoad();
-            Game.OnLoad();
+            Client.Game = new Game();
+            Client.Game.OnLoad();
         }
 
         protected override void OnResize(ResizeEventArgs e)
@@ -74,7 +75,7 @@ namespace fiveSeconds
 			Client?.Tick();
 
             HandleInputs(args, KeyboardState, MouseState);
-            Game.OnUpdateFrame(args);
+            Client.Game?.OnUpdateFrame(args);
         }
 
         private static double TimeAccumulator = 0;
@@ -92,7 +93,7 @@ namespace fiveSeconds
             TimeAccumulator += args.Time;
             if (TimeAccumulator >= 1.0)
             {
-                Console.WriteLine($"FPS: {FrameCount}, State: {Game.State}");
+                Console.WriteLine($"FPS: {FrameCount}, State: {Client.Game?.State}");
                 FrameCount = 0;
                 TimeAccumulator -= 1.0;
             }

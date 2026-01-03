@@ -70,7 +70,7 @@ namespace fiveSeconds
                 actionLists.Add(list);
             }
 
-            Game.CurrentStage.actionListsFromServer = actionLists;
+            Client.Game.CurrentStage.actionListsFromServer = actionLists;
         }
 
         public static void SetGameState(NetDataWriter writer, GameState state, float time)
@@ -82,11 +82,11 @@ namespace fiveSeconds
 
         public static void rGameState(NetDataReader reader)
         {
-            Game.State = (GameState)reader.GetInt();
+            Client.Game.State = (GameState)reader.GetInt();
             float time = reader.GetFloat();
-            if(Game.State == GameState.INPUT)
+            if(Client.Game.State == GameState.INPUT)
             {
-                Game.InputTimeLeft = time;
+                Client.Game.InputTimeLeft = time;
             }
         }
     }

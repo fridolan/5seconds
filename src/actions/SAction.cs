@@ -6,23 +6,23 @@ namespace fiveSeconds
     {
         public float TimePassed = 0;
         public float NextActivationTime = 0;
-        public Action NextActivation;
+        public Action<Game> NextActivation;
         public bool Finished = false;
         public bool Begun = false;
 
-        public void Execute()
+        public void Execute(Game game)
         {
             float now = NextActivationTime;
             if (Begun == false)
             {
-                Begin();
+                Begin(game);
                 Begun = true;
             }
-            else NextActivation();
+            else NextActivation(game);
             TimePassed = now;
         }
 
-        public abstract void Begin();
+        public abstract void Begin(Game game);
 
         public static SAction FromReader(NetDataReader reader)
         {

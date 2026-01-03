@@ -11,11 +11,6 @@ namespace fiveSeconds
         public Vector2i Position;
         public int ID;
         public ActionList ActionList = new();
-
-        public static Entity? GetByID(int id)
-        {
-            return Game.CurrentStage.EntityList.Find(e => e.ID == id);
-        }
     }
 
 
