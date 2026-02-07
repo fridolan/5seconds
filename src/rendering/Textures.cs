@@ -1,4 +1,5 @@
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace fiveSeconds
 {
@@ -12,6 +13,31 @@ namespace fiveSeconds
         public static int special_tile_atlas = LoadTexture("images/special_tile_atlas.png", false);
         public static int slider_head = LoadTexture("images/slider_head.png", false);
         public static int slightly_transparent_white = LoadTexture("images/slightly_transparent_white.png");
+        public static int actions_slots = LoadTexture("images/actions_slots.png");
+        public static int hp_bar = LoadTexture("images/hp_bar.png");
+        public static int hp_bar_empty = LoadTexture("images/hp_bar_empty.png");
+        public static int mana_bar = LoadTexture("images/mana_bar.png");
+        public static int mana_bar_empty = LoadTexture("images/mana_bar_empty.png");
+        public static int slot = LoadTexture("images/slot.png");
+        public static int sword = LoadTexture("images/sword.png");
+
+        public static TextureInfo INFO_hp_bar = new()
+        {
+            Margin = (5, 5),
+            Size = (105, 26),
+        };
+
+        public static TextureInfo INFO_actions_slots = new()
+        {
+            Margin = (7,7),
+            Size = (227, 30),
+        };
+
+        public static TextureInfo INFO_slot = new()
+        {
+            Margin = (5,5),
+            Size = (32, 32)
+        };
 
         public const int texturesPerRow = 8;
         public const int tile_pixel_size = 8;
@@ -40,5 +66,14 @@ namespace fiveSeconds
             return tex;
 
         }
+    }
+
+    public class TextureInfo
+    {
+        public Vector2 Size;
+        public Vector2 Margin;
+        public float SizeRatio => Size.X / Size.Y;
+        public Vector2 Inner => Size - Margin * 2;
+        public Vector2 MarginToSizeRatio => Margin / Size;
     }
 }

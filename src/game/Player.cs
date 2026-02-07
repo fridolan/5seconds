@@ -3,10 +3,10 @@ namespace fiveSeconds
     public class Player
     {
         // Only Serverside
-        public int clientId;
+        public int ClientId;
         // Both
-        public byte id;
+        public byte Id;
         // Only Clientside
-        public Entity entity;
+        public Entity Entity;
     }
 }

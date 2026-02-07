@@ -52,6 +52,11 @@ namespace fiveSeconds
             () => new Aspect(),
             () => new Spider(),
         ];
+
+        public void AddAction(SAction action)
+        {
+            ActionList.Actions.Add(action);
+        }
     }
 
 

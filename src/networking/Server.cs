@@ -32,9 +32,9 @@ namespace fiveSeconds
             playerCount += 1;
             Player player = new Player
             {
-                id = id,
+                Id = id,
                 //position = new(x, y),
-                clientId = clientId
+                ClientId = clientId
             };
             players[id] = player;
 
@@ -107,11 +107,11 @@ namespace fiveSeconds
             Player newPlayer = AddPlayer(clientId, 50, 50);
             Entity entity = Game.CurrentStage.EntityList.Find(e => e is Aspect);
             if(entity == null) throw new Exception("No player entity found");
-            newPlayer.entity = entity;
+            newPlayer.Entity = entity;
  
             NetDataWriter writer = new();
             cWriters[clientId] = writer;
-            ServerMessages.PlayerID(writer, newPlayer.id, entity);
+            ServerMessages.PlayerID(writer, newPlayer.Id, entity);
         }
 
         public void OnClientDisconnected(int clientId)

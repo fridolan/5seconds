@@ -5,6 +5,7 @@ namespace fiveSeconds
         public string Name;
         public SAction Action;
         public int TimeCost;
+        public virtual int Icon => 0;
 
         public static Type? Use(Ability ability, AbilityContext abilityContext)
         {
@@ -27,11 +28,16 @@ namespace fiveSeconds
                 } else return typeof(IAbilityManaCost);
             }
 
+            if(ability is IAbilityTargetRequirement tr)
+            {
+                if(abilityContext.TargetEntity == null) return typeof(IAbilityTargetRequirement);
+            }
+
             ability.U(abilityContext);
 
             return null;
         }
 
-        public abstract void U(AbilityContext abilityContext);
+        public abstract bool U(AbilityContext abilityContext);
     }
 }

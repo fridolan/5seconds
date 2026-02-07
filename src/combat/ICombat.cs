@@ -6,6 +6,7 @@ namespace fiveSeconds
     {
         public Stats BaseStats {get; set;}
         public Stats Stats { get; set; }
+        public List<Ability> Abilities {get; set;}
 
         public void Write(NetDataWriter writer)
         {

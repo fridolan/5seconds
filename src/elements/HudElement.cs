@@ -10,11 +10,15 @@ namespace fiveSeconds
         public int TextureId;
         public Vector4 TexCoords = new(0, 0, 1, 1);
         public int Rotation = 0;
-        
+
         public Vector2 UpperLeft => Position;
         public Vector2 UpperRight => Position + (Size.X, 0);
         public Vector2 LowerLeft => Position + (0, Size.Y);
         public Vector2 LowerRight => Position + Size;
+
+        public Vector2 InnerMarginRatio;
+        public HudElement InnerElement;
+        public bool RenderInnerElement;
 
         public bool Hovered(out Vector2 position)
         {
@@ -24,7 +28,7 @@ namespace fiveSeconds
 
             position = (p - aP) / aS;
 
-           // Console.WriteLine($"Hov pos {position}");
+            // Console.WriteLine($"Hov pos {position}");
 
             return position.X > 0 && position.Y > 0
             && position.X < 1 && position.Y < 1;
@@ -40,6 +44,13 @@ namespace fiveSeconds
                 TexCoords = TexCoords,
                 Rotation = Rotation,
             });
+
+            if (RenderInnerElement && InnerElement != null)
+            {
+                InnerElement.Position = Position + Size * InnerMarginRatio;
+                InnerElement.Size = Size - InnerMarginRatio * 2 * Size;
+                InnerElement.Render();
+            }
         }
     }
 }

@@ -35,7 +35,6 @@ namespace fiveSeconds
                     Position = baseElement.Position,
                     Size = (borderSize, baseElement.Size.Y),
                     TextureId = borderTexture,
-
                 }
             );
             // Top

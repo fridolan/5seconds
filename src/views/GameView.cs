@@ -17,6 +17,8 @@ namespace fiveSeconds
         public Entity? ControlledEntity;
         private Mesh SpecialTileMesh = new();
 
+        public AbilitySlot[] AbilitySlots = AbilitySlot.InitArray();
+
         public override void OnLoad()
         {
             TileShader = new Shader("tileAtlasV.glsl", "tileAtlasF.glsl");
@@ -26,22 +28,174 @@ namespace fiveSeconds
         public override void OnRenderFrame(FrameEventArgs args)
         {
             RenderStage();
-
-            if (Client.Game != null) remainingTimeBar.Size.X = (Client.Game.InputTimeLeft / Client.Game.InputPhaseLength) * Window.Width;
-            remainingTimeBar.Render();
+            RenderHUD((float)args.Time);
 
             HudRenderer.Draw(true);
             TextHandler.renderer.Draw();
         }
 
-        public HudElement remainingTimeBar = new()
-        {
-            Position = (0, 0),
-            Size = (Window.Width, Window.Height * 0.02f),
-            TextureId = Textures.slightly_transparent_white,
-        };
 
-        public void RenderStage()
+        private HudElement remainingTimeBar;
+        private ButtonElement hpBarEmpty;
+        private ButtonElement hpBarFilling;
+        private ButtonElement manaBarEmpty;
+        private ButtonElement manaBarFilling;
+        private HudElement abilitySlotsBackground;
+
+        public GameView()
+        {
+            remainingTimeBar = new()
+            {
+                Position = (0, 0),
+                Size = (Window.Width, Window.Height * 0.02f),
+                TextureId = Textures.slightly_transparent_white,
+            };
+
+            hpBarEmpty = new()
+            {
+                BaseElement = new()
+                {
+                    Position = (0 + Window.Height * 0.01f, 0 + Window.Height * 0.03f),
+                    Size = (Textures.INFO_hp_bar.SizeRatio * Window.Height * 0.1f, Window.Height * 0.1f),
+                    TextureId = Textures.hp_bar_empty,
+                },
+                RenderBaseElement = true,
+                RenderTexture = false,
+                RenderBorder = false,
+                RenderInnerText = true,
+                RenderHeader = false,
+                RenderHover = false,
+            };
+
+            hpBarFilling = new()
+            {
+                BaseElement = new()
+                {
+                    Position = hpBarEmpty.BaseElement.Position,
+                    Size = hpBarEmpty.BaseElement.Size,
+                    TextureId = Textures.hp_bar,
+                },
+                RenderBaseElement = true,
+                RenderTexture = false,
+                RenderBorder = false,
+                RenderInnerText = false,
+                RenderHeader = false,
+                RenderHover = false,
+            };
+
+            manaBarEmpty = new()
+            {
+                BaseElement = new()
+                {
+                    Position = (0 + Window.Height * 0.01f, hpBarEmpty.LowerLeft.Y + Window.Height * 0.00f),
+                    Size = (Textures.INFO_hp_bar.SizeRatio * Window.Height * 0.1f, Window.Height * 0.1f),
+                    TextureId = Textures.mana_bar_empty,
+                },
+                RenderBaseElement = true,
+                RenderTexture = false,
+                RenderBorder = false,
+                RenderInnerText = true,
+                RenderHeader = false,
+                RenderHover = false,
+            };
+
+            manaBarFilling = new()
+            {
+                BaseElement = new()
+                {
+                    Position = manaBarEmpty.BaseElement.Position,
+                    Size = manaBarEmpty.BaseElement.Size,
+                    TextureId = Textures.mana_bar,
+                },
+                RenderBaseElement = true,
+                RenderTexture = false,
+                RenderBorder = false,
+                RenderInnerText = false,
+                RenderHeader = false,
+                RenderHover = false,
+            };
+
+            TextureInfo slotsInfo = Textures.INFO_actions_slots;
+
+            abilitySlotsBackground = new()
+            {
+                Position = (Window.Width / 2 - Window.Width / 3, Window.Height * 0.82f),
+                Size = (2 * Window.Width / 3, 2 * Window.Width / 3 / slotsInfo.SizeRatio),
+                TextureId = Textures.actions_slots
+            };
+
+            float margin = slotsInfo.Margin.Y / (float)slotsInfo.Size.Y * abilitySlotsBackground.Size.Y;
+            Vector2 innerPos = abilitySlotsBackground.Position + new Vector2(margin, margin);
+            Vector2 innerSize = abilitySlotsBackground.Size - new Vector2(margin,margin) * 2;
+            Vector2 elementSize = (innerSize.Y, innerSize.Y);
+            float distanceBetweenElements = (innerSize.X - elementSize.X * AbilitySlots.Length) / (AbilitySlots.Length - 1);
+
+            Console.WriteLine($"{abilitySlotsBackground.Position - innerPos}");
+
+            for(int i = 0; i < AbilitySlots.Length; i++)
+            {
+                AbilitySlots[i].Position = innerPos + new Vector2(elementSize.X + distanceBetweenElements, 0) * i;
+                AbilitySlots[i].Size = elementSize;
+            }
+        }
+
+        private void RenderHUD(float dT)
+        {
+            Stage stage = Client.Game.CurrentStage;
+
+            if (Client.Game == null) return;
+
+            remainingTimeBar.Size.X = (Client.Game.InputTimeLeft / Client.Game.InputPhaseLength) * Window.Width;
+            remainingTimeBar.Render();
+
+            if (stage.PlayerEntity is ICombat c)
+            {
+                { // HP & Mana HUD Bars
+                    hpBarEmpty.Text = $"{c.Stats.CurrentHealth} / {c.Stats.MaxHealth}";
+                    manaBarEmpty.Text = $"{c.Stats.CurrentMana} / {c.Stats.MaxMana}";
+                    TextureInfo hpBarInfo = Textures.INFO_hp_bar;
+
+                    hpBarFilling.BaseElement.Size.X = hpBarEmpty.BaseElement.Size.X *
+                    ((hpBarInfo.Inner.X / (float)hpBarInfo.Size.X) * c.Stats.CurrentHealth / (float)c.Stats.MaxHealth + hpBarInfo.Margin.X / (float)hpBarInfo.Size.X);
+                    hpBarFilling.BaseElement.TexCoords =
+                    (0, 0, ((hpBarInfo.Inner.X / (float)hpBarInfo.Size.X) * c.Stats.CurrentHealth / (float)c.Stats.MaxHealth + hpBarInfo.Margin.X / (float)hpBarInfo.Size.X), 1);
+
+                    manaBarFilling.BaseElement.Size.X = manaBarEmpty.BaseElement.Size.X *
+                    ((hpBarInfo.Inner.X / (float)hpBarInfo.Size.X) * c.Stats.CurrentMana / (float)c.Stats.MaxMana + hpBarInfo.Margin.X / (float)hpBarInfo.Size.X);
+                    manaBarFilling.BaseElement.TexCoords =
+                    (0, 0, ((hpBarInfo.Inner.X / (float)hpBarInfo.Size.X) * c.Stats.CurrentMana / (float)c.Stats.MaxMana + hpBarInfo.Margin.X / (float)hpBarInfo.Size.X), 1);
+
+                    hpBarEmpty.Render(dT);
+                    manaBarEmpty.Render(dT);
+                    hpBarFilling.Render(dT);
+                    manaBarFilling.Render(dT);
+                }
+                { // Ability Slots
+                    AbilitySlots[0].Ability = c.Abilities[0];
+                    abilitySlotsBackground.Render();
+
+                    for(int i = 0; i < AbilitySlots.Length; i++)
+                    {
+                        HudElement element = new HudElement()
+                        {
+                            Position = AbilitySlots[i].Position,
+                            Size = AbilitySlots[i].Size,
+                            TextureId = Textures.slot,
+                            RenderInnerElement = true,
+                            InnerMarginRatio = Textures.INFO_slot.MarginToSizeRatio,
+                            InnerElement = new()
+                            {
+                                TextureId = AbilitySlots[i].Ability.Icon,
+                            }
+                        };
+
+                        element.Render();
+                    }
+                }
+            }
+        }
+
+        private void RenderStage()
         {
             if (Client.Game.CurrentStage == null) return;
 
@@ -101,7 +255,7 @@ namespace fiveSeconds
                 List<Vector2i> goals = [.. playerEntity.ActionList.Actions.OfType<IStartGoalInput>().Select(a => a.Goal)];
                 goals.ForEach((g) =>
                 {
-                    SpecialTileMesh.RectAt(g, 1, (1,1));
+                    SpecialTileMesh.RectAt(g, 1, (1, 1));
                 });
             }
 
@@ -188,6 +342,11 @@ namespace fiveSeconds
 
             Entity? playerEntity = stage.PlayerEntity;
 
+            if (Keybind.ZERO.IsPressed())
+            {
+                //((ICombat)playerEntity).Stats.CurrentMana -= 5;
+            }
+
             // Console.WriteLine($"mTP {HoveredTile} {validHover} {playerEntity}");
 
             if (Keybind.LEFTCLICK.IsPressed())
@@ -228,15 +387,24 @@ namespace fiveSeconds
                     playerEntity.ActionList.AddActionClient(action);
                 }
 
-                if (Keybind.ONE.IsPressed() && entityAtHover != null && entityAtHover is ICombat)
+                AbilityContext context = new()
                 {
-                    MeleeAttackEntityAction action = new()
-                    {
-                        EntityID = playerEntity.ID,
-                        ToEntityID = entityAtHover.ID,
-                    };
-                    playerEntity.ActionList.AddActionClient(action);
-                }
+                  SourceEntity = playerEntity,
+                  TargetEntity = entityAtHover,
+                  Stage = stage,
+                  TargetTile = HoveredTile,  
+                };
+
+                if (Keybind.ONE.IsPressed()) Ability.Use(AbilitySlots[0].Ability, context);
+                if (Keybind.TWO.IsPressed()) Ability.Use(AbilitySlots[1].Ability, context);
+                if (Keybind.THREE.IsPressed()) Ability.Use(AbilitySlots[2].Ability, context);
+                if (Keybind.FOUR.IsPressed()) Ability.Use(AbilitySlots[3].Ability, context);
+                if (Keybind.FIVE.IsPressed()) Ability.Use(AbilitySlots[4].Ability, context);
+                if (Keybind.SIX.IsPressed()) Ability.Use(AbilitySlots[5].Ability, context);
+                if (Keybind.SEVEN.IsPressed()) Ability.Use(AbilitySlots[6].Ability, context);
+                if (Keybind.EIGHT.IsPressed()) Ability.Use(AbilitySlots[7].Ability, context);
+                if (Keybind.NINE.IsPressed()) Ability.Use(AbilitySlots[8].Ability, context);
+                if (Keybind.ZERO.IsPressed()) Ability.Use(AbilitySlots[9].Ability, context);
             }
         }
 

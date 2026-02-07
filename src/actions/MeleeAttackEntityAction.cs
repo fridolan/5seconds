@@ -2,12 +2,13 @@ using OpenTK.Mathematics;
 
 namespace fiveSeconds
 {
-    public class MeleeAttackEntityAction : SAction, IEntityIDInput, IToEntityIDInput, IWaitInput
+    public class MeleeAttackEntityAction : SAction, IEntityIDInput, IToEntityIDInput, IWaitInput, IDamagePercentInput
     {
         public int EntityID { get; set; }
         public bool CancelOnDisplace { get; set; } = true;
         public int ToEntityID { get; set; } = -1;
         public bool Wait { get; set; } = false;
+        public int DamagePercent {get; set;} = 1;
 
         private Entity ToEntity;
         private Entity Entity;
@@ -53,7 +54,6 @@ namespace fiveSeconds
             else
             {
                 NextActivation = End;
-                NextActivationTime += AttackTime;
             }
         }
         #endregion

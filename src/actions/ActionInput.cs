@@ -32,4 +32,9 @@ namespace fiveSeconds
     {
         public bool Wait {get; set;}
     }
+
+    public interface IDamagePercentInput
+    {
+        public int DamagePercent {get; set;}
+    }
 }

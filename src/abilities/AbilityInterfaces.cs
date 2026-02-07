@@ -16,4 +16,9 @@ namespace fiveSeconds
         public int LastUsed {get; set;}
     }
 
+    public interface IAbilityTargetRequirement
+    {
+        
+    }
+
 }

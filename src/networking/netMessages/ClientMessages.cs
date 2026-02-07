@@ -38,7 +38,7 @@ namespace fiveSeconds
 
             if (Server.Game.State == GameState.INPUT)
             {
-                player.entity.ActionList = actionList;
+                player.Entity.ActionList = actionList;
             }
             else
             {

@@ -9,15 +9,21 @@ namespace fiveSeconds
         public int BorderTexture = 666;
         public int HoverTexture = 666;
         public int ClickTexture = 666;
+        public int TextureId = 666;
+        public Vector4 TexCoords = (0, 0, 1, 1);
+        public int Rotation = 0;
 
         public bool RenderBaseElement = false;
         public bool RenderBorder = true;
         public bool RenderHeader = true;
         public bool RenderInnerText = true;
+        public bool RenderTexture = false;
+        public bool RenderHover = true;
+        public bool RenderClick = true;
 
         public string Text = "";
         public float TextSize = 1f;
-        public Action SubmitAction = () => {};
+        public Action SubmitAction = () => { };
 
         public float HeaderFactor = 1 / 0.7f;
         public string HeaderText = "";
@@ -33,11 +39,11 @@ namespace fiveSeconds
                 BorderElement.renderBorder(BaseElement, BorderSize, BorderTexture);
             }
 
-            if (ClickTime > 0)
+            if (ClickTime > 0 && RenderClick)
             {
                 BorderElement.renderBorder(BaseElement, BorderSize, ClickTexture);
             }
-            else if (Hovered(out _))
+            else if (Hovered(out _) && RenderHover)
             {
                 BorderElement.renderBorder(BaseElement, BorderSize, HoverTexture);
             }
@@ -67,6 +73,18 @@ namespace fiveSeconds
                     TextureId = BaseElement.TextureId,
                     TexCoords = BaseElement.TexCoords,
                     Rotation = BaseElement.Rotation,
+                });
+            }
+
+            if (RenderTexture)
+            {
+                HudRenderer.renderer.elements.Add(new()
+                {
+                    Position = BaseElement.Position + (BorderSize, BorderSize),
+                    Size = BaseElement.Size - (BorderSize * 2, BorderSize * 2),
+                    TextureId = TextureId,
+                    TexCoords = TexCoords,
+                    Rotation = Rotation,
                 });
             }
 
