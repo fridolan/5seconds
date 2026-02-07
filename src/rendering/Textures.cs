@@ -11,6 +11,7 @@ namespace fiveSeconds
         public static int entity_atlas = LoadTexture("images/entity_atlas.png", false);
         public static int special_tile_atlas = LoadTexture("images/special_tile_atlas.png", false);
         public static int slider_head = LoadTexture("images/slider_head.png", false);
+        public static int slightly_transparent_white = LoadTexture("images/slightly_transparent_white.png");
 
         public const int texturesPerRow = 8;
         public const int tile_pixel_size = 8;

@@ -9,6 +9,7 @@ namespace fiveSeconds
         public Action<Game> NextActivation;
         public bool Finished = false;
         public bool Begun = false;
+        public bool Waiting = false;
 
         public void Execute(Game game)
         {
@@ -26,7 +27,7 @@ namespace fiveSeconds
 
         public static SAction FromReader(NetDataReader reader)
         {
-            
+
             int typeIndex = reader.GetInt();
             SAction action = GetInstance[typeIndex]();
 
@@ -63,13 +64,18 @@ namespace fiveSeconds
                 tei.ToEntityID = reader.GetInt();
             }
 
+            if(action is IWaitInput w)
+            {
+                w.Wait = reader.GetBool();
+            }
+
             return action;
         }
 
         public void Write(NetDataWriter writer)
         {
             SAction action = this;
-            
+
             writer.Put(GetTypeIndex[action.GetType()]);
 
             writer.Put(TimePassed);
@@ -104,14 +110,23 @@ namespace fiveSeconds
             {
                 writer.Put(tei.ToEntityID);
             }
+
+            if(action is IWaitInput w)
+            {
+                writer.Put(w.Wait);
+            }
         }
 
         public static Dictionary<Type, int> GetTypeIndex = new(){
           { typeof(MoveEntityAction), 0 },
+          { typeof(CatchEntityAction), 1 },
+          { typeof(MeleeAttackEntityAction), 2},
         };
 
         public static List<Func<SAction>> GetInstance = [
-            () => new MoveEntityAction()
+            () => new MoveEntityAction(),
+            () => new CatchEntityAction(),
+            () => new MeleeAttackEntityAction(),
         ];
     }
 }

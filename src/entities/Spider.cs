@@ -8,6 +8,8 @@ namespace fiveSeconds
         public Spider()
         {
             AtlasIndex = 0;
+            Stats = new();
+            BaseStats = new();
         }
     }
 }

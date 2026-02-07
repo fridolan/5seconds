@@ -6,7 +6,7 @@ namespace fiveSeconds
         public int ResultingAmount;
         public DamageType Type;
 
-
+        private static bool debugDamageC = true;
         public static int DamageC(CombatContext combatContext)
         {
             ICombat target = combatContext.Target;
@@ -20,9 +20,14 @@ namespace fiveSeconds
             bool isMagic = type == DamageType.FIRE || type == DamageType.FROST || type == DamageType.LIGHTNING;
             int resultingAmount = damage.Amount;
 
+            if(debugDamageC) Console.WriteLine($"DamageC: {target} {source}" );
+            if(debugDamageC) Console.WriteLine($"Starting Damage {resultingAmount}");
+
             resultingAmount *= source.Stats.DamageDealMults[type];
             resultingAmount /= 100;
             resultingAmount += source.Stats.DamageDealAdds[type];
+
+            if(debugDamageC) Console.WriteLine($"Damage after mults&adds {resultingAmount}");
 
             if (isPhysical) // Armor
             {
@@ -30,6 +35,8 @@ namespace fiveSeconds
                 int dmgPerc = 100 * stats.Armor / divisor;
                 resultingAmount *= dmgPerc;
                 resultingAmount /= 100;
+
+                if(debugDamageC) Console.WriteLine($"Damage after {stats.Armor} armor {resultingAmount}");
             }
 
             if (type == DamageType.FIRE && status_effects[StatusEffect.Freezing] != 0)
@@ -41,6 +48,8 @@ namespace fiveSeconds
 
                 resultingAmount += bonus;
                 status_effects[StatusEffect.Freezing] -= bonus * 100 / ratePerc;
+
+                if(debugDamageC) Console.WriteLine($"Fire Damage after freezing {resultingAmount}");
             }
 
             if (type == DamageType.FIRE && status_effects[StatusEffect.Wet] != 0)
@@ -52,6 +61,8 @@ namespace fiveSeconds
 
                 resultingAmount -= malus;
                 status_effects[StatusEffect.Wet] -= malus * 100 / ratePerc;
+
+                if(debugDamageC) Console.WriteLine($"Fire Damage after wet {resultingAmount}");
             }
 
             if (type == DamageType.LIGHTNING && status_effects[StatusEffect.Wet] != 0)
@@ -63,9 +74,12 @@ namespace fiveSeconds
 
                 resultingAmount += bonus;
                 status_effects[StatusEffect.Wet] -= bonus * 100 / ratePerc;
+
+                if(debugDamageC) Console.WriteLine($"Lightning Damage after wet {resultingAmount}");
             }
 
             target.Stats.CurrentHealth -= resultingAmount;
+            Console.WriteLine($"Damaged Entity by {resultingAmount} to {target.Stats.CurrentHealth}");
 
             combatContext.Damage.ResultingAmount = resultingAmount;
 

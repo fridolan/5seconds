@@ -11,12 +11,7 @@ namespace fiveSeconds
 
         public static KeyboardState keyboard;
         public static MouseState mouse;
-        public static Vector2 screenDragStart;
-        public static Vector2 screenDragEnd;
-        public static Vector2i worldDragStart;
-        public static Vector2i worldDragEnd;
         public static Vector2 mousePos;
-        //public static Vector2i mouseTile; 
         public static Vector2 wheelDelta;
 
         

@@ -47,12 +47,13 @@ namespace fiveSeconds
         {
             Window.Client.playerId = reader.GetByte();
             Window.Client.ControlledEntityID = reader.GetInt();
-            Console.WriteLine("Client Received Byte");
+            Console.WriteLine($"Client Received Byte {Window.Client.playerId} {Window.Client.ControlledEntityID}");
         }
 
-        public static void ActionLists(NetDataWriter writer, List<ActionList> actionLists)
+        public static void ActionLists(NetDataWriter writer, List<ActionList> actionLists, int round)
         {
             writer.Put((byte)SMessageType.ActionLists);
+            writer.Put(round);
             writer.Put(actionLists.Count);
             for (int i = 0; i < actionLists.Count; i++)
             {
@@ -64,6 +65,7 @@ namespace fiveSeconds
         public static void rActionlists(NetDataReader reader)
         {
             Console.WriteLine("Client Read ActionLists");
+            int round = reader.GetInt();
             int listCount = reader.GetInt();
             Console.WriteLine($"listCount {listCount}");
             List<ActionList> actionLists = [];
@@ -77,17 +79,20 @@ namespace fiveSeconds
             //Client.Game.CurrentStage.actionListsFromServer = actionLists;
         }
 
-        public static void SetGameState(NetDataWriter writer, GameState state, float time)
+        public static void SetGameState(NetDataWriter writer, GameState state, float time, int round)
         {
             writer.Put((byte)SMessageType.SetGameState);
             writer.Put((int)state);
             writer.Put(time);
+            writer.Put(round);
+
         }
 
         public static void rGameState(NetDataReader reader)
         {
             Client.Game.State = (GameState)reader.GetInt();
             float time = reader.GetFloat();
+            int round = reader.GetInt();
             if(Client.Game.State == GameState.INPUT)
             {
                 Client.Game.InputTimeLeft = time;

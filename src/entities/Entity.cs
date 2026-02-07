@@ -6,7 +6,6 @@ namespace fiveSeconds
     public abstract class Entity
     {
         public static readonly int TextureId = Textures.entity_atlas;
-        public static int IDCounter = 0;
 
         public int ID;
         public int AtlasIndex;

@@ -8,6 +8,8 @@ namespace fiveSeconds
         public Aspect()
         {
             AtlasIndex = 1;
+            Stats = new();
+            BaseStats = new();
         }
     }
 }

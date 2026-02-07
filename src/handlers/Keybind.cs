@@ -15,6 +15,12 @@ namespace fiveSeconds
             KeyboardButtons = [],
         };
 
+        public static Keybind RIGHTCLICK = new()
+        {
+            MouseButtons = [(int)MouseButton.Right],
+            KeyboardButtons = [],
+        };
+
         public static Keybind UP = new()
         {
             MouseButtons = [],
@@ -121,6 +127,11 @@ namespace fiveSeconds
         {
             MouseButtons = [],
             KeyboardButtons = [(int)Keys.LeftAlt],
+        };
+
+        public static Keybind SCROLLDOWN = new()
+        {
+            MouseButtons = []
         };
 
         public bool IsPressed()

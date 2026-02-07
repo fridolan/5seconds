@@ -4,44 +4,46 @@ namespace fiveSeconds
 {
     public class ActionList
     {
-        public List<SAction> actions = [];
+        public List<SAction> Actions = [];
         public int NextActionIndex = 0;
-        public bool Finished => actions.Count <= NextActionIndex;
-        public float timer = 0;
+        public SAction? NextAction => NextActionIndex >= Actions.Count ? null : Actions[NextActionIndex];
+        public bool Finished => Actions.Count <= NextActionIndex;
+        public float Timer = 0;
+        public bool Waiting => NextAction is {Waiting: true};
 
         public float GetNextTiming()
         {
-            if (actions.Count > NextActionIndex)
-                return timer + actions[NextActionIndex].NextActivationTime;
+            if (Actions.Count > NextActionIndex)
+                return Timer + Actions[NextActionIndex].NextActivationTime;
             else return float.MaxValue;
         }
 
         public void Act(Game game)
         {
-            SAction action = actions[NextActionIndex];
+            SAction action = Actions[NextActionIndex];
             action.Execute(game);
             if (action.Finished)
             {
                 NextActionIndex++;
-                timer += action.TimePassed;
+                Timer += action.TimePassed;
             }
         }
 
         public void Reset()
         {
-            actions.Clear();
+            Actions.Clear();
             NextActionIndex = 0;
-            timer = 0;
+            Timer = 0;
         }
 
         public void Write(NetDataWriter writer)
         {
             writer.Put(NextActionIndex);
-            writer.Put(timer);
-            writer.Put(actions.Count);
-            for (int i = 0; i < actions.Count; i++)
+            writer.Put(Timer);
+            writer.Put(Actions.Count);
+            for (int i = 0; i < Actions.Count; i++)
             {
-                actions[i].Write(writer);
+                Actions[i].Write(writer);
             }
         }
 
@@ -51,10 +53,10 @@ namespace fiveSeconds
             ActionList newList = new()
             {
                 NextActionIndex = reader.GetInt(),
-                timer = reader.GetFloat(),
+                Timer = reader.GetFloat(),
             };
 
-            Console.WriteLine($"ActionList from Reader, NextActionIndex {newList.NextActionIndex} Timer {newList.timer}");
+            Console.WriteLine($"ActionList from Reader, NextActionIndex {newList.NextActionIndex} Timer {newList.Timer}");
 
             List<SAction> actions = [];
             int actionCount = reader.GetInt();
@@ -64,13 +66,13 @@ namespace fiveSeconds
                 actions.Add(action);
             }
 
-            newList.actions = actions;
+            newList.Actions = actions;
             return newList;
         }
 
         public void AddActionClient(SAction action)
         {
-            actions.Add(action);
+            Actions.Add(action);
             ClientMessages.FullActionList(Window.Client.writer, this);
         }
 

@@ -47,6 +47,53 @@ namespace fiveSeconds
             VertexOffset += 4;
         }
 
+        public void AtlasRect(Vector2 corner1, Vector2 corner2, int index)
+        {
+            float x1 = corner1.X;
+            float y1 = corner1.Y;
+            float x2 = corner2.X;
+            float y2 = corner2.Y;
+
+            float[] quadVerts = {
+                        x1, y1 + y2, 0, 0, index,
+                        x1 + x2, y1 + y2, 1, 0, index,
+                        x1 + x2, y1, 1, 1, index,
+                        x1, y1, 0, 1, index
+                    };
+            Vertices.AddRange(quadVerts);
+            Indices.AddRange([
+                VertexOffset, VertexOffset + 1, VertexOffset + 2,
+                        VertexOffset + 2, VertexOffset + 3, VertexOffset
+            ]);
+            VertexOffset += 4;
+        }
+
+        public void SingleRect(Vector2 corner1, Vector2 corner2)
+        {
+            SingleRect(corner1, corner2, (0,0), (1,1));
+        }
+
+        public void SingleRect(Vector2 corner1, Vector2 corner2, Vector2 textureCorner1, Vector2 textureCorner2)
+        {
+            float x1 = corner1.X;
+            float y1 = corner1.Y;
+            float x2 = corner2.X;
+            float y2 = corner2.Y;
+
+            float[] quadVerts = {
+                        x1, y1 + y2, textureCorner1.X, textureCorner1.Y, -1, // -1 is only filler
+                        x1 + x2, y1 + y2, textureCorner2.X, textureCorner1.Y, -1,
+                        x1 + x2, y1, textureCorner2.X, textureCorner2.Y, -1,
+                        x1, y1, textureCorner1.X, textureCorner2.Y, -1
+                    };
+            Vertices.AddRange(quadVerts);
+            Indices.AddRange([
+                VertexOffset, VertexOffset + 1, VertexOffset + 2,
+                        VertexOffset + 2, VertexOffset + 3, VertexOffset
+            ]);
+            VertexOffset += 4;
+        }
+
         public void UploadToGPU()
         {
             DeleteBuffers();

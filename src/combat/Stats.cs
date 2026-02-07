@@ -16,12 +16,12 @@ namespace fiveSeconds
             Index = 1,
         };
 
-        public static readonly BasicStat AttackSpeed = new()
+        public static readonly BasicStat AttackSpeed = new() // 100 => 1
         {
             Index = 2,
         };
 
-        public static readonly BasicStat MovementSpeed = new()
+        public static readonly BasicStat MovementSpeed = new() // 100 => 1
         {
             Index = 3,
         };
@@ -78,6 +78,13 @@ namespace fiveSeconds
         public int[] DamageTakeAdds { get; set; } = DamageType.FilledArray(0);
         public int[] DamageTakeMults { get; set; } = DamageType.FilledArray(100);
         public int[] StatusEffects { get; set; } = StatusEffect.FilledArray(0);
+
+        public bool CostMana(int amount)
+        {
+            if(CurrentMana < amount) return false;
+            CurrentMana -= amount;
+            return true;
+        }
 
         public Stats GetCopy()
         {

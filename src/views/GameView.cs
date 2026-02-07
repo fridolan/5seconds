@@ -27,9 +27,19 @@ namespace fiveSeconds
         {
             RenderStage();
 
+            if (Client.Game != null) remainingTimeBar.Size.X = (Client.Game.InputTimeLeft / Client.Game.InputPhaseLength) * Window.Width;
+            remainingTimeBar.Render();
+
             HudRenderer.Draw(true);
             TextHandler.renderer.Draw();
         }
+
+        public HudElement remainingTimeBar = new()
+        {
+            Position = (0, 0),
+            Size = (Window.Width, Window.Height * 0.02f),
+            TextureId = Textures.slightly_transparent_white,
+        };
 
         public void RenderStage()
         {
@@ -84,6 +94,17 @@ namespace fiveSeconds
             {
                 SpecialTileMesh.RectAt(HoveredTile, 0, (1, 1));
             }
+
+            // Path lines
+            if (stage.PlayerEntity is Entity playerEntity)
+            {
+                List<Vector2i> goals = [.. playerEntity.ActionList.Actions.OfType<IStartGoalInput>().Select(a => a.Goal)];
+                goals.ForEach((g) =>
+                {
+                    SpecialTileMesh.RectAt(g, 1, (1,1));
+                });
+            }
+
             SpecialTileMesh.UploadToGPU();
 
             GL.BindVertexArray(SpecialTileMesh.Vao);
@@ -111,11 +132,11 @@ namespace fiveSeconds
             //Vector2i tilePosition = ScreenToTilePosition(Input.mousePos, CameraAngle - Game.ships[0].Angle);
 
             // Zoom
-            if (keyboard.IsKeyPressed(Keys.Y))
+            if (mouse.ScrollDelta.Y < 0)
             {
                 Zoom = Zoom / 2;
             }
-            if (keyboard.IsKeyPressed(Keys.U))
+            if (mouse.ScrollDelta.Y > 0)
             {
                 Zoom = Zoom * 2;
             }
@@ -162,11 +183,17 @@ namespace fiveSeconds
             HoveredTile = ScreenToTilePosition(mouse.Position, 0);
             Vector2 hoveredTileF = ScreenToTilePositionFloat(mouse.Position, 0);
             bool validHover = stage.ValidTilePos(HoveredTile);
-            //Console.WriteLine($"mTP {HoveredTile}");
 
             if (Window.Client == null) return;
 
-            Entity playerEntity = stage.EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
+            Entity? playerEntity = stage.PlayerEntity;
+
+            // Console.WriteLine($"mTP {HoveredTile} {validHover} {playerEntity}");
+
+            if (Keybind.LEFTCLICK.IsPressed())
+            {
+                Console.WriteLine(stage.EntityList[0].ID);
+            }
 
             if (validHover && playerEntity != null)
             {
@@ -184,6 +211,30 @@ namespace fiveSeconds
 
                     //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
 
+                    playerEntity.ActionList.AddActionClient(action);
+                }
+
+                Entity? entityAtHover = stage.Entities[HoveredTile.Y][HoveredTile.X];
+
+                if (Keybind.RIGHTCLICK.IsPressed() && entityAtHover != null)
+                {
+                    CatchEntityAction action = new()
+                    {
+                        CancelOnDisplace = false,
+                        EntityID = playerEntity.ID,
+                        ToEntityID = entityAtHover.ID,
+                    };
+
+                    playerEntity.ActionList.AddActionClient(action);
+                }
+
+                if (Keybind.ONE.IsPressed() && entityAtHover != null && entityAtHover is ICombat)
+                {
+                    MeleeAttackEntityAction action = new()
+                    {
+                        EntityID = playerEntity.ID,
+                        ToEntityID = entityAtHover.ID,
+                    };
                     playerEntity.ActionList.AddActionClient(action);
                 }
             }

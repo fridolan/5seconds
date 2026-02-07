@@ -17,8 +17,7 @@ namespace fiveSeconds
 
         public bool ManuallyPaused = false;
         public float InputTimeLeft = 0;
-
-        private float InputPhaseLength = 6;
+        public float InputPhaseLength = 6;
 
         private bool firstUpdateTick = false;
 

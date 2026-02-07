@@ -13,30 +13,40 @@ namespace fiveSeconds
         public Mesh TileMesh;
         public Mesh EntityMesh;
         public List<Entity> EntityList = [];
+        public int EntityIDCounter = 0;
 
         public bool EntityMeshDirty = false;
         public bool TileMeshDirty = false;
 
+        public List<ActionList> ActionLists;
+
         private float roundTime = 0;
-        private List<ActionList> actionLists;
+        public int Round = 0;
+
+        public Entity? PlayerEntity => Window.Client == null ? null : EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
 
         public void Tick(float dT, bool first, out bool done)
         {
             roundTime += dT;
             List<ActionList> allActionLists = [.. EntityList.Select((e) => e.ActionList)];
 
-            actionLists = [.. allActionLists.Where(l => !l.Finished)];
+            ActionLists = [.. allActionLists.Where(l => l is { Finished: false, Waiting: false })];
+            List<ActionList> waitingActionLists = [.. allActionLists.Where(l => l is { Finished: false, Waiting: true })];
+            // ActionLists that await a certain state. They will try to act after any other act.
 
-            if (first && Game == Server.Game) ServerMessages.ActionLists(Window.Server.bWriter, actionLists);
+            if (first && Game == Server.Game) ServerMessages.ActionLists(Window.Server.bWriter, ActionLists, Round);
 
-            if (actionLists.Count > 0)
+            if (ActionLists.Count > 0)
             {
                 //Console.WriteLine($"ActionLists remaining {}");
-                ActionList nextList = actionLists.MinBy(l => l.GetNextTiming());
+                ActionList nextList = ActionLists.MinBy(l => l.GetNextTiming());
                 if (nextList != null && nextList.GetNextTiming() <= roundTime)
                 {
                     nextList.Act(Game);
                 }
+
+                waitingActionLists.ForEach(l => l.Act(Game));
+
                 done = false;
             }
             else
@@ -44,6 +54,7 @@ namespace fiveSeconds
                 Console.WriteLine("Round over");
                 done = true;
                 roundTime = 0;
+                Round++;
 
                 foreach (var list in allActionLists)
                 {
@@ -98,8 +109,8 @@ namespace fiveSeconds
 
             Entities[Position.Y][Position.X] = entity;
             EntityList.Add(entity);
-            entity.ID = Entity.IDCounter;
-            Entity.IDCounter++;
+            entity.ID = EntityIDCounter;
+            EntityIDCounter++;
             EntityMeshDirty = true;
 
             return true;

@@ -27,4 +27,9 @@ namespace fiveSeconds
     {
         public int ToEntityID {get; set;}
     }
+
+    public interface IWaitInput
+    {
+        public bool Wait {get; set;}
+    }
 }

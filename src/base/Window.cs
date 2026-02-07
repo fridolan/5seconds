@@ -26,7 +26,7 @@ namespace fiveSeconds
             {
                 Title = "Space Schmutz",
                 ClientSize = (Width, Height),
-                //WindowBorder = WindowBorder.Hidden,
+                WindowBorder = WindowBorder.Hidden,
                 StartVisible = true,
                 StartFocused = true,
                 API = ContextAPI.OpenGL,
