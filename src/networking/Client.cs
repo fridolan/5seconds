@@ -52,10 +52,12 @@ namespace fiveSeconds
         public void OnDataReceived(int senderId, NetPacketReader reader)
         {
             //Console.WriteLine($"CLIENT: From {senderId}, Remaining bytes: {reader.AvailableBytes}");
+
+            if(Window.Server != null) return;
             while (reader.AvailableBytes > 0)
             {
                 byte type = reader.GetByte();
-                Console.WriteLine($"Byte: {type}");
+                //Console.WriteLine($"Byte: {type}");
 
                 if(ServerMessages.MessageHandlers.TryGetValue((SMessageType)type, out var handler))
                 {

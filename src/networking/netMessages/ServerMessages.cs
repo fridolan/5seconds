@@ -47,7 +47,7 @@ namespace fiveSeconds
         {
             Window.Client.playerId = reader.GetByte();
             Window.Client.ControlledEntityID = reader.GetInt();
-            Console.WriteLine($"Client Received Byte {Window.Client.playerId} {Window.Client.ControlledEntityID}");
+            Console.WriteLine($"Client Received PlayerID & EntityID: {Window.Client.playerId} {Window.Client.ControlledEntityID}");
         }
 
         public static void ActionLists(NetDataWriter writer, List<ActionList> actionLists, int round)
@@ -76,7 +76,8 @@ namespace fiveSeconds
             }
 
             // TODO:
-            //Client.Game.CurrentStage.actionListsFromServer = actionLists;
+            Client.Game.CurrentStage.FromServerActionlists = actionLists;
+            Client.Game.CurrentStage.Round = round;
         }
 
         public static void SetGameState(NetDataWriter writer, GameState state, float time, int round)
@@ -90,13 +91,17 @@ namespace fiveSeconds
 
         public static void rGameState(NetDataReader reader)
         {
-            Client.Game.State = (GameState)reader.GetInt();
+            
+            GameState gameState =(GameState)reader.GetInt();
+            Client.Game.SetState(gameState);
             float time = reader.GetFloat();
             int round = reader.GetInt();
-            if(Client.Game.State == GameState.INPUT)
+            Console.WriteLine($"Client: Handle rGameState {gameState} {time} {round}");
+            if(gameState == GameState.INPUT)
             {
                 Client.Game.InputTimeLeft = time;
             }
+            Client.Game.CurrentStage.Round = round;
         }
 
         public static void Entities(NetDataWriter writer, List<Entity> entities)

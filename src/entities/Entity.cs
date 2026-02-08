@@ -21,7 +21,7 @@ namespace fiveSeconds
             entity.Position = (reader.GetInt(), reader.GetInt());
             entity.ActionList = ActionList.FromReader(reader);
 
-            if(entity is ICombat c)
+            if (entity is ICombat c)
             {
                 c.Read(reader);
             }
@@ -37,7 +37,7 @@ namespace fiveSeconds
             writer.Put(Position.Y);
             ActionList.Write(writer);
 
-            if(this is ICombat c)
+            if (this is ICombat c)
             {
                 c.Write(writer);
             }
@@ -56,6 +56,7 @@ namespace fiveSeconds
         public void AddAction(SAction action)
         {
             ActionList.Actions.Add(action);
+            ClientMessages.FullActionList(Window.Client.writer, ActionList);
         }
     }
 

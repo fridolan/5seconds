@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using LiteNetLib.Utils;
 using OpenTK.Mathematics;
 
@@ -12,7 +13,8 @@ namespace fiveSeconds
 
     public enum CMessageType : byte
     {
-        FullActionList
+        FullActionList,
+        UpdateDone,
     }
 
     public static class ClientMessages
@@ -20,6 +22,7 @@ namespace fiveSeconds
         public static Dictionary<CMessageType, Action<NetDataReader, byte>> MessageHandlers = new()
         {
             { CMessageType.FullActionList, rFullActionList},
+            { CMessageType.UpdateDone, rUpdateDone},
         };
 
         public static void FullActionList(NetDataWriter writer, ActionList actionList)
@@ -36,7 +39,7 @@ namespace fiveSeconds
             Player? player = Server.GetPlayerByByte(playerByte);
             if (player == null) return;
 
-            if (Server.Game.State == GameState.INPUT)
+            if (Client.Game.State == GameState.INPUT)
             {
                 player.Entity.ActionList = actionList;
             }
@@ -44,6 +47,21 @@ namespace fiveSeconds
             {
                 Console.WriteLine("Ignored Client Input, as its not Input Phase anymore");
             }
+        }
+
+        public static void UpdateDone(NetDataWriter writer, int round)
+        {
+            writer.Put((byte)CMessageType.UpdateDone);
+            Console.WriteLine("Own Client update is done, informing Server..");
+            writer.Put(round);
+        }
+
+        public static void rUpdateDone(NetDataReader reader, byte playerByte)
+        {
+            Console.WriteLine("Server receives Client UpdateDoneConfirmation");
+            int round = reader.GetInt();
+            if(round + 1 < Client.Game.CurrentStage.Round) throw new Exception($"Desync Client: {playerByte} with round {round} instead of {Client.Game.CurrentStage.Round}");
+            Client.Game.ClientsFinishedUpdate[playerByte] = true;
         }
     }
 

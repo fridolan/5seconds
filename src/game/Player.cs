@@ -5,7 +5,7 @@ namespace fiveSeconds
         // Only Serverside
         public int ClientId;
         // Both
-        public byte Id;
+        public byte ID;
         // Only Clientside
         public Entity Entity;
     }

@@ -26,7 +26,7 @@ namespace fiveSeconds
             {
                 Title = "Space Schmutz",
                 ClientSize = (Width, Height),
-                WindowBorder = WindowBorder.Hidden,
+                //WindowBorder = WindowBorder.Hidden,
                 StartVisible = true,
                 StartFocused = true,
                 API = ContextAPI.OpenGL,
@@ -40,7 +40,7 @@ namespace fiveSeconds
 
         protected override void OnLoad()
         {
-            GL.Viewport(0, 0, Width, Height);
+            UpdateViewport();
             base.OnLoad();
             GL.ClearColor(0.02f, 0.02f, 0.02f, 1f);
 
@@ -52,13 +52,44 @@ namespace fiveSeconds
 
             View.GameView.OnLoad();
             Client.Game = new Game();
-            Client.Game.OnLoad();
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            GL.Viewport(0, 0, Width, Height);
+            //GL.Viewport(0, 0, Width, Height);
+            UpdateViewport();
+        }
+
+        private void UpdateViewport()
+        {
+            const float targetAspect = 16f / 9f;
+
+            int fbWidth = FramebufferSize.X;
+            int fbHeight = FramebufferSize.Y;
+
+            float windowAspect = fbWidth / (float)fbHeight;
+
+            int vpWidth, vpHeight, vpX, vpY;
+
+            if (windowAspect > targetAspect)
+            {
+                // links / rechts
+                vpHeight = fbHeight;
+                vpWidth = (int)(vpHeight * targetAspect);
+                vpX = (fbWidth - vpWidth) / 2;
+                vpY = 0;
+            }
+            else
+            {
+                // oben / unten
+                vpWidth = fbWidth;
+                vpHeight = (int)(vpWidth / targetAspect);
+                vpX = 0;
+                vpY = (fbHeight - vpHeight) / 2;
+            }
+
+            GL.Viewport(vpX, vpY, vpWidth, vpHeight);
         }
 
         protected override void OnUnload()
@@ -71,8 +102,8 @@ namespace fiveSeconds
             base.OnUpdateFrame(args);
 
             AudioManager.Update(args.Time);
-			Server?.Tick(args.Time);
-			Client?.Tick();
+            Server?.Tick(args.Time);
+            Client?.Tick();
 
             HandleInputs(args, KeyboardState, MouseState);
             Client.Game?.OnUpdateFrame(args);
@@ -93,7 +124,8 @@ namespace fiveSeconds
             TimeAccumulator += args.Time;
             if (TimeAccumulator >= 1.0)
             {
-                Console.WriteLine($"FPS: {FrameCount}, State: {Client.Game?.State}");
+                String s = Window.Server == null ? "Client" : "Server";
+                Console.WriteLine($"FPS: {FrameCount}, State: {Client.Game?.State}, {s}, Round: {Client.Game?.CurrentStage?.Round}");
                 FrameCount = 0;
                 TimeAccumulator -= 1.0;
             }
@@ -113,12 +145,12 @@ namespace fiveSeconds
                 InitServer();
 
             if (Client == null && keyboard.IsKeyPressed(Keys.I))
-                InitClient();
+                InitClient(Server != null);
 
             if (Client == null && keyboard.IsKeyPressed(Keys.P))
             {
                 if (Server == null) InitServer();
-                InitClient();
+                InitClient(true);
             }
 
             /* if (keyboard.IsKeyPressed(Keys.M))
@@ -134,11 +166,12 @@ namespace fiveSeconds
             Console.WriteLine("Start Server");
         }
 
-        public static void InitClient()
+        public static void InitClient(bool local)
         {
             Client = new Client();
-            Client.Start("localhost");
+            Client.Start(local ? "localhost" : "idolfan.ddns.net");
             Console.WriteLine("Start Client");
+            Client.Game = new Game();
         }
 
     }

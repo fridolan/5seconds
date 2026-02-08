@@ -47,18 +47,23 @@ namespace fiveSeconds
             VertexOffset += 4;
         }
 
-        public void AtlasRect(Vector2 corner1, Vector2 corner2, int index)
+        public void AtlasRect(Vector2 corner1, Vector2 size, int index)
+        {
+            AtlasRect(corner1, size, (0,0), (1,1), index);
+        }
+
+        public void AtlasRect(Vector2 corner1, Vector2 size, Vector2 textureCorner1, Vector2 textureCorner2, int index)
         {
             float x1 = corner1.X;
             float y1 = corner1.Y;
-            float x2 = corner2.X;
-            float y2 = corner2.Y;
+            float sizeX = size.X;
+            float sizeY = size.Y;
 
             float[] quadVerts = {
-                        x1, y1 + y2, 0, 0, index,
-                        x1 + x2, y1 + y2, 1, 0, index,
-                        x1 + x2, y1, 1, 1, index,
-                        x1, y1, 0, 1, index
+                        x1, y1 + sizeY, textureCorner1.X, textureCorner1.Y, index,
+                        x1 + sizeX, y1 + sizeY, textureCorner2.X, textureCorner1.Y, index,
+                        x1 + sizeX, y1, textureCorner2.X, textureCorner2.Y, index,
+                        x1, y1, textureCorner1.X, textureCorner2.Y, index
                     };
             Vertices.AddRange(quadVerts);
             Indices.AddRange([

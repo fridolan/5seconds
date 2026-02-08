@@ -22,8 +22,6 @@ namespace fiveSeconds
         public double stateTickTimer = 0;
         public double stateTickInterval = 1 / 10f;
 
-        public static Game Game;
-
         public static Player AddPlayer(int clientId, int x, int y)
         {
             byte id = idCounter++;
@@ -32,7 +30,7 @@ namespace fiveSeconds
             playerCount += 1;
             Player player = new Player
             {
-                Id = id,
+                ID = id,
                 //position = new(x, y),
                 ClientId = clientId
             };
@@ -47,8 +45,8 @@ namespace fiveSeconds
         {
             _net = new LiteNetLibTransport();
             _net.SetHandler(this);
-            Game = new Game();
-            Game.OnLoad();
+/*             Game = new Game();
+            Game.OnLoad(); */
         }
 
         public void Start()
@@ -105,13 +103,18 @@ namespace fiveSeconds
             Console.WriteLine($"Client {clientId} connected.");
 
             Player newPlayer = AddPlayer(clientId, 50, 50);
-            Entity entity = Game.CurrentStage.EntityList.Find(e => e is Aspect);
+            Entity entity = Client.Game.CurrentStage.EntityList.Find(e => e is Aspect);
             if(entity == null) throw new Exception("No player entity found");
             newPlayer.Entity = entity;
  
             NetDataWriter writer = new();
             cWriters[clientId] = writer;
-            ServerMessages.PlayerID(writer, newPlayer.Id, entity);
+            ServerMessages.PlayerID(writer, newPlayer.ID, entity);
+            if(playerCount == 1)
+            {
+                Window.Client.playerId = newPlayer.ID;
+                Window.Client.ControlledEntityID = entity.ID;
+            }
         }
 
         public void OnClientDisconnected(int clientId)

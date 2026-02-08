@@ -12,7 +12,7 @@ namespace fiveSeconds
         private bool _isServer;
         private Dictionary<int, NetPeer> _peers = new();
         private NetPeer _serverPeer;
-        private int port = 9050;
+        private int port = 8888;
 
         public void Start()
         {
@@ -63,7 +63,7 @@ namespace fiveSeconds
             //Console.WriteLine("Server broadcast");
             foreach (var peer in _peers.Values)
             {
-                //Console.WriteLine($"Send to {peer.Id}");
+               // Console.WriteLine($"Send to {peer.Id}");
                 peer.Send(writer, DeliveryMethod.ReliableOrdered);
             }
         }

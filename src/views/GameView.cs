@@ -27,6 +27,8 @@ namespace fiveSeconds
 
         public override void OnRenderFrame(FrameEventArgs args)
         {
+            if(Client.Game?.CurrentStage == null) return;
+            
             RenderStage();
             RenderHUD((float)args.Time);
 
@@ -126,13 +128,13 @@ namespace fiveSeconds
 
             float margin = slotsInfo.Margin.Y / (float)slotsInfo.Size.Y * abilitySlotsBackground.Size.Y;
             Vector2 innerPos = abilitySlotsBackground.Position + new Vector2(margin, margin);
-            Vector2 innerSize = abilitySlotsBackground.Size - new Vector2(margin,margin) * 2;
+            Vector2 innerSize = abilitySlotsBackground.Size - new Vector2(margin, margin) * 2;
             Vector2 elementSize = (innerSize.Y, innerSize.Y);
             float distanceBetweenElements = (innerSize.X - elementSize.X * AbilitySlots.Length) / (AbilitySlots.Length - 1);
 
             Console.WriteLine($"{abilitySlotsBackground.Position - innerPos}");
 
-            for(int i = 0; i < AbilitySlots.Length; i++)
+            for (int i = 0; i < AbilitySlots.Length; i++)
             {
                 AbilitySlots[i].Position = innerPos + new Vector2(elementSize.X + distanceBetweenElements, 0) * i;
                 AbilitySlots[i].Size = elementSize;
@@ -174,7 +176,7 @@ namespace fiveSeconds
                     AbilitySlots[0].Ability = c.Abilities[0];
                     abilitySlotsBackground.Render();
 
-                    for(int i = 0; i < AbilitySlots.Length; i++)
+                    for (int i = 0; i < AbilitySlots.Length; i++)
                     {
                         HudElement element = new HudElement()
                         {
@@ -246,7 +248,7 @@ namespace fiveSeconds
             SpecialTileMesh.Clear();
             if (stage.ValidTilePos(HoveredTile))
             {
-                SpecialTileMesh.RectAt(HoveredTile, 0, (1, 1));
+                SpecialTileMesh.RectAt(HoveredTile, SpecialTileIndeces.SELECT, (1, 1));
             }
 
             // Path lines
@@ -255,9 +257,19 @@ namespace fiveSeconds
                 List<Vector2i> goals = [.. playerEntity.ActionList.Actions.OfType<IStartGoalInput>().Select(a => a.Goal)];
                 goals.ForEach((g) =>
                 {
-                    SpecialTileMesh.RectAt(g, 1, (1, 1));
+                    SpecialTileMesh.RectAt(g, SpecialTileIndeces.HIGHLIGHT, (1, 1));
                 });
             }
+
+            // Entity hp & mana bars
+            stage.EntityList.ForEach((e) =>
+            {
+                if (e is ICombat c)
+                {
+                    SpecialTileMesh.AtlasRect(e.Position - (0, 1), (c.Stats.HealthPercentage, 1), (0, 0), (c.Stats.HealthPercentage, 1), SpecialTileIndeces.HP_BAR);
+                    SpecialTileMesh.AtlasRect(e.Position - (0, 1), (c.Stats.ManaPercentage, 1), (0, 0), (c.Stats.ManaPercentage, 1), SpecialTileIndeces.MANA_BAR);
+                }
+            });
 
             SpecialTileMesh.UploadToGPU();
 
@@ -370,7 +382,7 @@ namespace fiveSeconds
 
                     //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
 
-                    playerEntity.ActionList.AddActionClient(action);
+                    playerEntity.AddAction(action);
                 }
 
                 Entity? entityAtHover = stage.Entities[HoveredTile.Y][HoveredTile.X];
@@ -384,15 +396,15 @@ namespace fiveSeconds
                         ToEntityID = entityAtHover.ID,
                     };
 
-                    playerEntity.ActionList.AddActionClient(action);
+                    playerEntity.AddAction(action);
                 }
 
                 AbilityContext context = new()
                 {
-                  SourceEntity = playerEntity,
-                  TargetEntity = entityAtHover,
-                  Stage = stage,
-                  TargetTile = HoveredTile,  
+                    SourceEntity = playerEntity,
+                    TargetEntity = entityAtHover,
+                    Stage = stage,
+                    TargetTile = HoveredTile,
                 };
 
                 if (Keybind.ONE.IsPressed()) Ability.Use(AbilitySlots[0].Ability, context);

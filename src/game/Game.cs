@@ -29,6 +29,11 @@ namespace fiveSeconds
             };
         }
 
+        public Game()
+        {
+            OnLoad();
+        }
+
         public void OnUpdateFrame(FrameEventArgs args)
         {
             float dT = (float)args.Time;
@@ -42,20 +47,72 @@ namespace fiveSeconds
             InputTimeLeft -= dT;
             if (InputTimeLeft <= 0)
             {
+                if (Window.Server != null)
+                {
+                    SetState(GameState.UPDATE);
+                }
+                else
+                {
+                    State = GameState.PAUSE;
+                }
                 firstUpdateTick = true;
-                State = GameState.UPDATE;
-                return;
             }
         }
 
-        private void Update(float dT)
+        public void SetState(GameState state)
         {
-            CurrentStage.Tick(dT, firstUpdateTick, out bool done);
-            if (done)
+            if (state == GameState.UPDATE)
+            {
+                State = GameState.UPDATE;
+                ownUpdateDone = false;
+            }
+            else if (state == GameState.INPUT)
             {
                 State = GameState.INPUT;
-                InputTimeLeft = InputPhaseLength;
             }
+            else if (state == GameState.PAUSE)
+            {
+                State = GameState.PAUSE;
+            }
+        }
+
+        public Dictionary<byte, bool> ClientsFinishedUpdate = [];
+        private bool ownUpdateDone = false;
+        private bool confirmedUpdateToServer;
+
+        private void Update(float dT)
+        {
+            if (!ownUpdateDone)
+            {
+                confirmedUpdateToServer = false;
+                CurrentStage.Tick(dT, firstUpdateTick, out bool done);
+                if (done)
+                {
+                    ownUpdateDone = true;
+                    Console.WriteLine("Own update done, waiting for others");
+                }
+            }
+            else
+            {
+                if (Window.Server != null)
+                {
+                    if (ClientsFinishedUpdate.Keys.Count == Server.playerCount - 1)
+                    {
+                        State = GameState.INPUT;
+                        InputTimeLeft = InputPhaseLength;
+                        ServerMessages.SetGameState(Window.Server.bWriter, Client.Game.State, Client.Game.InputTimeLeft, CurrentStage.Round);
+                        Console.WriteLine($"All Clients finished UPDATE, moving to INPUT ({ClientsFinishedUpdate.Keys.Count})");
+                        ClientsFinishedUpdate = [];
+                    }
+                }
+                else if (!confirmedUpdateToServer)
+                {
+                    ClientMessages.UpdateDone(Window.Client.writer, CurrentStage.Round);
+                    State = GameState.PAUSE;
+                    confirmedUpdateToServer = true;
+                }
+            }
+
             firstUpdateTick = false;
         }
 

@@ -68,8 +68,8 @@ namespace fiveSeconds
         public int MaxMana { get => Basic[BasicStat.MaxMana]; set => Basic[BasicStat.MaxMana] = value; }
         public int CurrentMana { get => Basic[BasicStat.CurrentMana]; set => Basic[BasicStat.CurrentMana] = value; }
 
-        public float HealthPercentage => CurrentHealth / MaxHealth;
-        public float ManaPercentage => CurrentMana / MaxMana;
+        public float HealthPercentage => CurrentHealth / (float)MaxHealth;
+        public float ManaPercentage => CurrentMana / (float)MaxMana;
 
 
         public int[] Basic { get; set; } = BasicStat.FilledArray(100);

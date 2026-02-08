@@ -7,6 +7,7 @@ namespace fiveSeconds
 
         public override bool U(AbilityContext context)
         {
+            Console.WriteLine("Used melee");
             if(context.TargetEntity is Entity target){
             MeleeAttackEntityAction action = new()
             {

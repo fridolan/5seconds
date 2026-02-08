@@ -70,12 +70,5 @@ namespace fiveSeconds
             return newList;
         }
 
-        public void AddActionClient(SAction action)
-        {
-            Actions.Add(action);
-            ClientMessages.FullActionList(Window.Client.writer, this);
-        }
-
-
     }
 }
