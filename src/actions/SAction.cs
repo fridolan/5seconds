@@ -10,6 +10,7 @@ namespace fiveSeconds
         public bool Finished = false;
         public bool Begun = false;
         public bool Waiting = false;
+        public virtual int Icon => 0;
 
         public void Execute(Game game)
         {

@@ -26,6 +26,7 @@ namespace fiveSeconds
         public static int hud_transparent_color = LoadTexture("images/hud_transparent_color.png");
         public static int selection_color = LoadTexture("images/selection_color.png");
         public static int main_menu_background = LoadTexture("images/main_menu_background.png");
+        public static int move = LoadTexture("images/move.png");
 
         public static TextureInfo INFO_hp_bar = new()
         {

@@ -33,7 +33,7 @@ namespace fiveSeconds
         public static Dictionary<SMessageType, Action<NetDataReader>> MessageHandlers = new()
         {
             { SMessageType.PlayerID, rPlayerID },
-            { SMessageType.ActionLists, rActionlists },
+            { SMessageType.ActionLists, rActionLists },
             { SMessageType.SetGameState, rGameState },
             { SMessageType.Entities, rEntities },
             { SMessageType.SetLobbyInfo, rSetLobbyInfo },
@@ -52,33 +52,35 @@ namespace fiveSeconds
             Console.WriteLine($"Client Received PlayerID: {Window.Client.playerId}");
         }
 
-        public static void ActionLists(NetDataWriter writer, List<ActionList> actionLists, int round)
+        public static void ActionLists(NetDataWriter writer, List<ActionList> entityActionLists, int round)
         {
             writer.Put((byte)SMessageType.ActionLists);
             writer.Put(round);
-            writer.Put(actionLists.Count);
-            for (int i = 0; i < actionLists.Count; i++)
+            writer.Put(entityActionLists.Count);
+            for (int i = 0; i < entityActionLists.Count; i++)
             {
-                var list = actionLists[i];
+                writer.Put(Client.Game.CurrentStage.EntityList[i].ID);
+                var list = entityActionLists[i];
                 list.Write(writer);
             }
         }
 
-        public static void rActionlists(NetDataReader reader)
+        public static void rActionLists(NetDataReader reader)
         {
             Console.WriteLine("Client Read ActionLists");
             int round = reader.GetInt();
             int listCount = reader.GetInt();
             Console.WriteLine($"listCount {listCount}");
-            List<ActionList> actionLists = [];
+
             for (int i = 0; i < listCount; i++)
             {
+                int entityID = reader.GetInt();
                 ActionList list = ActionList.FromReader(reader);
-                actionLists.Add(list);
+                Entity entity = Client.Game.CurrentStage.EntityList.Find(e => e.ID == entityID);
+                if(entity == null) throw new Exception("rActionLists: Entity not found by ID. Async.");
+                entity.ActionList = list;
             }
 
-            // TODO:
-            Client.Game.CurrentStage.FromServerActionlists = actionLists;
             Client.Game.CurrentStage.Round = round;
         }
 

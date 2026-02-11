@@ -40,7 +40,7 @@ namespace fiveSeconds
         {
             float dT = (float)args.Time;
             if (State == GameState.INPUT) Input(dT);
-            else if (State == GameState.UPDATE) Update(dT); // TODO :((( Viel Spaß beim Client / Server separieren
+            else if (State == GameState.UPDATE) Update(dT);
             else if (State == GameState.PAUSE) Pause(dT);
             else if (State == GameState.GAMESTART) GameStart(dT);
         }

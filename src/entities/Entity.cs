@@ -55,8 +55,20 @@ namespace fiveSeconds
 
         public void AddAction(SAction action)
         {
-            ActionList.Actions.Add(action);
-            ClientMessages.FullActionList(Window.Client.writer, ActionList);
+            if (Client.Game.State == GameState.INPUT)
+            {
+                ActionList.Actions.Add(action);
+                ClientMessages.FullActionList(Window.Client.writer, ActionList);
+            }
+        }
+
+        public void RemoveAction(SAction action)
+        {
+            if (Client.Game.State == GameState.INPUT)
+            {
+                ActionList.Actions.Remove(action);
+                ClientMessages.FullActionList(Window.Client.writer, ActionList);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ namespace fiveSeconds
         public int ToEntityID { get; set; } = -1;
         public bool Wait { get; set; } = false;
         public int DamagePercent {get; set;} = 1;
+        public override int Icon => Textures.sword;
 
         private Entity ToEntity;
         private Entity Entity;

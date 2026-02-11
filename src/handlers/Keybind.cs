@@ -111,6 +111,12 @@ namespace fiveSeconds
             KeyboardButtons = [(int)Keys.E],
         };
 
+        public static Keybind BACK = new()
+        {
+            MouseButtons = [],
+            KeyboardButtons = [(int)Keys.Q]  
+        };
+
         public static Keybind CONTROL = new()
         {
             MouseButtons = [],

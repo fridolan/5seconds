@@ -21,7 +21,6 @@ namespace fiveSeconds
         public bool TileMeshDirty = false;
 
         public List<ActionList> ActionLists;
-        public List<ActionList> FromServerActionlists = [];
 
         private float roundTime = 0;
         public int Round = 0;
@@ -52,16 +51,16 @@ namespace fiveSeconds
         public void Tick(float dT, bool first, out bool done)
         {
             roundTime += dT;
-            List<ActionList> allActionLists = Window.Server != null ? GetAllActionLists() : FromServerActionlists;
+            GetAllActionLists(out List<ActionList> entityActionLists);
 
-            ActionLists = [.. allActionLists.Where(l => l is { Finished: false, Waiting: false })];
-            List<ActionList> waitingActionLists = [.. allActionLists.Where(l => l is { Finished: false, Waiting: true })];
+            ActionLists = [.. entityActionLists.Where(l => l is { Finished: false, Waiting: false })];
+            List<ActionList> waitingActionLists = [.. entityActionLists.Where(l => l is { Finished: false, Waiting: true })];
             // ActionLists that await a certain state. They will try to act after any other act.
 
             if (first && Window.Server != null)
             {
                 Console.WriteLine("Server tick sends");
-                ServerMessages.ActionLists(Window.Server.bWriter, ActionLists, Round);
+                ServerMessages.ActionLists(Window.Server.bWriter, entityActionLists, Round);
                 ServerMessages.SetGameState(Window.Server.bWriter, Client.Game.State, Client.Game.InputTimeLeft, Round);
             }
 
@@ -85,16 +84,18 @@ namespace fiveSeconds
                 roundTime = 0;
                 Round++;
 
-                foreach (var list in GetAllActionLists())
+                GetAllActionLists(out List<ActionList> listEntities);
+
+                foreach (var list in listEntities)
                 {
                     list.Reset();
                 }
             }
         }
 
-        private List<ActionList> GetAllActionLists()
+        private void GetAllActionLists(out List<ActionList> listEntities)
         {
-            return [.. EntityList.Select((e) => e.ActionList)];
+            listEntities = [.. EntityList.Select((e) => e.ActionList)];
         }
 
 

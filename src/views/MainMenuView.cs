@@ -34,7 +34,25 @@ namespace fiveSeconds
             {
                 if (Window.Server == null) Window.InitServer();
                 Window.InitClient("localhost", true);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                Window.Server.players.Add(0, new Player()
+                {
+                    ID = 0,
+                    ClientId = 0,
+                });
+                Stage stage = Stage.GetStage(new LobbyInfo()
+                {
+                    Width = 32,
+                    Height = 32,
+                    Seed = 123,
+                }, Client.Game);
+                Window.Client.ControlledEntityID = Window.Server.PlayerList[0].Entity.ID;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                Client.Game.CurrentStage = stage;
                 CurrentView = GameView;
+                Client.Game.SetState(GameState.GAMESTART);
+                ServerMessages.SetLobbyInfo(Window.Server.bWriter);
+                ServerMessages.GameStart(Window.Server.bWriter);
             }
         };
 
@@ -81,12 +99,13 @@ namespace fiveSeconds
             float dT = (float)args.Time;
             Background.Render();
             DirectPlayButton.Render(dT);
-            
+
             if (multiplayerCardOpen)
             {
                 multiplayerElement.Render(dT);
                 MultiplayerButton.BorderTexture = MultiplayerButton.ClickTexture;
-            } else
+            }
+            else
             {
                 MultiplayerButton.BorderTexture = Textures.hud_color;
             }

@@ -9,6 +9,7 @@ namespace fiveSeconds
         public bool Relative {get; set;} = false;
         public Vector2i Start { get; set; }
         public Vector2i Goal { get; set; }
+        public override int Icon => Textures.move;
 
         private float TimePerStep = 0.5f;
         private int StepsTaken = 0;
