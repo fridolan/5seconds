@@ -15,6 +15,7 @@ namespace fiveSeconds
     {
         FullActionList,
         UpdateDone,
+        ConfirmGameStart,
     }
 
     public static class ClientMessages
@@ -23,6 +24,7 @@ namespace fiveSeconds
         {
             { CMessageType.FullActionList, rFullActionList},
             { CMessageType.UpdateDone, rUpdateDone},
+            { CMessageType.ConfirmGameStart, rConfirmGameStart},
         };
 
         public static void FullActionList(NetDataWriter writer, ActionList actionList)
@@ -62,6 +64,16 @@ namespace fiveSeconds
             int round = reader.GetInt();
             if(round + 1 < Client.Game.CurrentStage.Round) throw new Exception($"Desync Client: {playerByte} with round {round} instead of {Client.Game.CurrentStage.Round}");
             Client.Game.ClientsFinishedUpdate[playerByte] = true;
+        }
+
+        public static void ConfirmGameStart(NetDataWriter writer)
+        {
+            writer.Put((byte)CMessageType.ConfirmGameStart);
+        }
+
+        public static void rConfirmGameStart(NetDataReader reader, byte playerByte)
+        {
+            Client.Game.ClientsReceivedStart[playerByte] = true;
         }
     }
 

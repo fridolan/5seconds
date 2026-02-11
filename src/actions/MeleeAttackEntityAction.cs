@@ -30,6 +30,7 @@ namespace fiveSeconds
 
         private void Attack(Game game)
         {
+            Console.WriteLine($"Euc {(Entity.Position - ToEntity.Position).EuclideanLength}");
             if ((Entity.Position - ToEntity.Position).EuclideanLength < 2)
             {
                 CombatContext combatContext = new()

@@ -61,8 +61,14 @@ namespace fiveSeconds
                 BadEffectMultiplier = 1.035f,
                 SubmitAction = () =>
                 {
+                    Stage stage = Stage.GetStage(Info, Client.Game);
+                    Window.Client.ControlledEntityID = Window.Server.PlayerList[0].Entity.ID;
+                    Client.Game.CurrentStage = stage;
                     CurrentView = GameView;
-                    Client.Game.SetState(GameState.UPDATE);
+                    Client.Game.SetState(GameState.GAMESTART);
+                    ServerMessages.SetLobbyInfo(Window.Server.bWriter);
+                    ServerMessages.GameStart(Window.Server.bWriter);
+                    
                 }
             };
 
@@ -113,9 +119,10 @@ namespace fiveSeconds
                 Text = "64",
                 SubmitAction = (s) =>
                 {
-                    if(int.TryParse(s, out int newValue)){
+                    if (int.TryParse(s, out int newValue))
+                    {
                         Info.Width = newValue;
-                        ServerMessages.LobbyInfo(Window.Server.bWriter);
+                        ServerMessages.SetLobbyInfo(Window.Server.bWriter);
                     }
                 }
             };
@@ -140,9 +147,10 @@ namespace fiveSeconds
                 Text = "64",
                 SubmitAction = (s) =>
                 {
-                    if(int.TryParse(s, out int newValue)){
+                    if (int.TryParse(s, out int newValue))
+                    {
                         Info.Height = newValue;
-                        ServerMessages.LobbyInfo(Window.Server.bWriter);
+                        ServerMessages.SetLobbyInfo(Window.Server.bWriter);
                     }
                 }
             };
@@ -167,9 +175,10 @@ namespace fiveSeconds
                 Text = "123",
                 SubmitAction = (s) =>
                 {
-                    if(int.TryParse(s, out int newValue)){
+                    if (int.TryParse(s, out int newValue))
+                    {
                         Info.Seed = newValue;
-                        ServerMessages.LobbyInfo(Window.Server.bWriter);
+                        ServerMessages.SetLobbyInfo(Window.Server.bWriter);
                     }
                 }
             };
@@ -178,11 +187,15 @@ namespace fiveSeconds
         public override void HandleInputs(FrameEventArgs args)
         {
             float dT = (float)args.Time;
-            startGameButton.HandleInputs();
+            if (Host)
+            {
+                startGameButton.HandleInputs();
+                widthInput.HandleInputs(dT);
+                heightInput.HandleInputs(dT);
+                seedInput.HandleInputs(dT);
+            }
             closeGameButton.HandleInputs();
-            widthInput.HandleInputs(dT);
-            heightInput.HandleInputs(dT);
-            seedInput.HandleInputs(dT);
+
         }
 
         public override void OnLoad()
@@ -197,7 +210,7 @@ namespace fiveSeconds
             if (lobbyUpdateTimer > 1)
             {
                 lobbyUpdateTimer -= 1;
-                ServerMessages.LobbyInfo(Window.Server.bWriter);
+                ServerMessages.SetLobbyInfo(Window.Server.bWriter);
             }
         }
 
@@ -215,7 +228,10 @@ namespace fiveSeconds
 
             background.Render();
             card.Render();
-            startGameButton.Render(dT);
+            if (Host)
+            {
+                startGameButton.Render(dT);
+            }
             closeGameButton.Render(dT);
             widthInput.Render();
             widthText.Render();
@@ -230,30 +246,31 @@ namespace fiveSeconds
             //MenuBaseRender.OnRenderFrame(args);
         }
 
-        public class LobbyInfo
+    }
+
+    public class LobbyInfo
+    {
+        public int Width = 64;
+        public int Height = 64;
+        public int Seed = 123;
+
+        public static LobbyInfo FromReader(NetDataReader reader)
         {
-            public int Width = 64;
-            public int Height = 64;
-            public int Seed = 123;
-
-            public static LobbyInfo FromReader(NetDataReader reader)
+            LobbyInfo newLobbyInfo = new()
             {
-                LobbyInfo newLobbyInfo = new()
-                {
-                    Width = reader.GetInt(),
-                    Height = reader.GetInt(),
-                    Seed = reader.GetInt(),
-                };
+                Width = reader.GetInt(),
+                Height = reader.GetInt(),
+                Seed = reader.GetInt(),
+            };
 
-                return newLobbyInfo;
-            }
+            return newLobbyInfo;
+        }
 
-            public void Write(NetDataWriter writer)
-            {
-                writer.Put(Width);
-                writer.Put(Height);
-                writer.Put(Seed);
-            }
+        public void Write(NetDataWriter writer)
+        {
+            writer.Put(Width);
+            writer.Put(Height);
+            writer.Put(Seed);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace fiveSeconds
         public Dictionary<int, NetDataWriter> cWriters = [];
 
         public Dictionary<byte, Player> players = [];
+        public List<Player> PlayerList => players.Values.ToList(); 
         public Dictionary<byte, int> pIdToCId = [];
         public Dictionary<int, byte> CIdToPId = [];
         private byte idCounter = 0;
@@ -107,17 +108,13 @@ namespace fiveSeconds
             Console.WriteLine($"Client {clientId} connected.");
 
             Player newPlayer = AddPlayer(clientId, 50, 50);
-            Entity entity = Client.Game.CurrentStage.EntityList.Find(e => e is Aspect);
-            if(entity == null) throw new Exception("No player entity found");
-            newPlayer.Entity = entity;
  
             NetDataWriter writer = new();
             cWriters[clientId] = writer;
-            ServerMessages.PlayerID(writer, newPlayer.ID, entity);
+            ServerMessages.PlayerID(writer, newPlayer.ID);
             if(playerCount == 1)
             {
                 Window.Client.playerId = newPlayer.ID;
-                Window.Client.ControlledEntityID = entity.ID;
             }
         }
 

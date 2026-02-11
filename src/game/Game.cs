@@ -7,7 +7,8 @@ namespace fiveSeconds
         INPUT,
         UPDATE,
         PAUSE,
-        LOBBY
+        LOBBY,
+        GAMESTART
     }
 
     public class Game
@@ -24,10 +25,10 @@ namespace fiveSeconds
 
         public void OnLoad()
         {
-            CurrentStage = new Cave1()
+            /* CurrentStage = new Cave1()
             {
                 Game = this,
-            };
+            }; */
         }
 
         public Game()
@@ -41,6 +42,7 @@ namespace fiveSeconds
             if (State == GameState.INPUT) Input(dT);
             else if (State == GameState.UPDATE) Update(dT); // TODO :((( Viel Spaß beim Client / Server separieren
             else if (State == GameState.PAUSE) Pause(dT);
+            else if (State == GameState.GAMESTART) GameStart(dT);
         }
 
         private void Input(float dT)
@@ -67,16 +69,9 @@ namespace fiveSeconds
                 State = GameState.UPDATE;
                 ownUpdateDone = false;
             }
-            else if (state == GameState.INPUT)
+            else
             {
-                State = GameState.INPUT;
-            }
-            else if (state == GameState.PAUSE)
-            {
-                State = GameState.PAUSE;
-            } else if(state == GameState.LOBBY)
-            {
-                State = GameState.LOBBY;
+                State = state;
             }
         }
 
@@ -123,6 +118,21 @@ namespace fiveSeconds
         public void Pause(float dT)
         {
 
+        }
+
+        public Dictionary<byte, bool> ClientsReceivedStart = [];
+        public void GameStart(float dT)
+        {
+            if (Window.Server != null)
+            {
+                if (ClientsReceivedStart.Keys.Count == Window.Server.playerCount - 1)
+                {
+                    Console.WriteLine($"All Clients ready to start Game.");
+                    ClientsReceivedStart = [];
+                    State = GameState.INPUT;
+                    ServerMessages.SetGameState(Window.Server.bWriter, State, 0, 0);
+                }
+            }
         }
     }
 }

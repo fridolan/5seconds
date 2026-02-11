@@ -15,7 +15,7 @@ namespace fiveSeconds
         public Mesh EntityMesh;
         public List<Entity> EntityList = [];
         public int EntityIDCounter = 0;
-        public int seed = 0;
+        public int Seed = 0;
 
         public bool EntityMeshDirty = false;
         public bool TileMeshDirty = false;
@@ -35,6 +35,19 @@ namespace fiveSeconds
         public static List<Func<Stage>> GetInstance = [
             () => new Cave1(),
         ];
+
+        public static Stage GetStage(LobbyInfo info, Game game)
+        {
+            Stage stage = new Cave1()
+            {
+                Width = info.Width,
+                Height = info.Height,
+                Seed = info.Seed,
+                Game = game,
+            };
+            stage.Generate();
+            return stage;
+        }
 
         public void Tick(float dT, bool first, out bool done)
         {
@@ -84,6 +97,11 @@ namespace fiveSeconds
             return [.. EntityList.Select((e) => e.ActionList)];
         }
 
+
+        /**
+            A Stage has to generate the tiles, entities.
+            Each player.entity in the servers Players has to be set.
+        */
         public abstract void Generate();
         #region Render
         public void CreateTileMesh()
@@ -245,7 +263,7 @@ namespace fiveSeconds
         {
             int type = reader.GetInt();
             Stage stage = GetInstance[type]();
-            stage.seed = reader.GetInt();
+            stage.Seed = reader.GetInt();
             stage.Width = reader.GetInt();
             stage.Height = reader.GetInt();
 
@@ -255,7 +273,7 @@ namespace fiveSeconds
         public void Write(NetDataWriter writer)
         {
             writer.Put(GetTypeIndex[this.GetType()]);
-            writer.Put(seed);
+            writer.Put(Seed);
             writer.Put(Width);
             writer.Put(Height);
         }

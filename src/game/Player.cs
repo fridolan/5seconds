@@ -8,8 +8,8 @@ namespace fiveSeconds
         public int ClientId;
         // Both
         public byte ID;
-        // Only Clientside
         public Entity Entity;
+
 
         public static Player FromReader(NetDataReader reader)
         {

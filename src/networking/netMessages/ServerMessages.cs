@@ -24,7 +24,8 @@ namespace fiveSeconds
         ActionLists,
         SetGameState,
         Entities,
-        LobbyInfo
+        SetLobbyInfo,
+        GameStart
     }
 
     public static class ServerMessages
@@ -35,21 +36,20 @@ namespace fiveSeconds
             { SMessageType.ActionLists, rActionlists },
             { SMessageType.SetGameState, rGameState },
             { SMessageType.Entities, rEntities },
-            { SMessageType.LobbyInfo, rLobbyInfo },
+            { SMessageType.SetLobbyInfo, rSetLobbyInfo },
+            { SMessageType.GameStart, rGameStart},
         };
 
-        public static void PlayerID(NetDataWriter writer, byte playerID, Entity entity)
+        public static void PlayerID(NetDataWriter writer, byte playerID)
         {
             writer.Put((byte)SMessageType.PlayerID);
             writer.Put(playerID);
-            writer.Put(entity.ID);
         }
 
         public static void rPlayerID(NetDataReader reader)
         {
             Window.Client.playerId = reader.GetByte();
-            Window.Client.ControlledEntityID = reader.GetInt();
-            Console.WriteLine($"Client Received PlayerID & EntityID: {Window.Client.playerId} {Window.Client.ControlledEntityID}");
+            Console.WriteLine($"Client Received PlayerID: {Window.Client.playerId}");
         }
 
         public static void ActionLists(NetDataWriter writer, List<ActionList> actionLists, int round)
@@ -93,13 +93,13 @@ namespace fiveSeconds
 
         public static void rGameState(NetDataReader reader)
         {
-            
-            GameState gameState =(GameState)reader.GetInt();
+
+            GameState gameState = (GameState)reader.GetInt();
             Client.Game.SetState(gameState);
             float time = reader.GetFloat();
             int round = reader.GetInt();
             Console.WriteLine($"Client: Handle rGameState {gameState} {time} {round}");
-            if(gameState == GameState.INPUT)
+            if (gameState == GameState.INPUT)
             {
                 Client.Game.InputTimeLeft = time;
             }
@@ -110,7 +110,7 @@ namespace fiveSeconds
         {
             writer.Put((byte)SMessageType.Entities);
             writer.Put(entities.Count);
-            for(int i = 0; i < entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
                 entities[i].Write(writer);
             }
@@ -122,17 +122,19 @@ namespace fiveSeconds
             stage.ClearEntities();
 
             int entityCount = reader.GetInt();
-            for(int i = 0; i< entityCount; i++)
+            for (int i = 0; i < entityCount; i++)
             {
                 Entity entity = Entity.FromReader(reader);
                 stage.AddEntity(entity);
             }
         }
 
-        public static void LobbyInfo(NetDataWriter writer)
+        private static int LobbyInfoVersion = 0;
+
+        public static void SetLobbyInfo(NetDataWriter writer)
         {
-            Console.WriteLine("Sending LobbyInfo..");
-            writer.Put((byte)SMessageType.LobbyInfo);
+            LobbyInfoVersion++;
+            writer.Put((byte)SMessageType.SetLobbyInfo);
             View.Lobby.Info.Write(writer);
 
             List<Player> players = Window.Server.players.Values.ToList();
@@ -140,26 +142,79 @@ namespace fiveSeconds
 
             players.ForEach((p) =>
             {
-               p.Write(writer);
+                p.Write(writer);
             });
+
+            int version = LobbyInfoVersion;
+            Console.WriteLine($"Sending LobbyInfo.. v{version}");
+            writer.Put(version);
         }
 
-        public static void rLobbyInfo(NetDataReader reader)
+        private static int rLobbyInfoVersion = -2;
+
+        public static void rSetLobbyInfo(NetDataReader reader)
         {
-            Console.WriteLine("Receiving LobbyInfo..");
-            LobbyView.LobbyInfo info = LobbyView.LobbyInfo.FromReader(reader);
+
+            LobbyInfo info = LobbyInfo.FromReader(reader);
 
             List<Player> players = [];
 
             int playerCount = reader.GetInt();
-            for(int i = 0; i < playerCount; i++)
+            for (int i = 0; i < playerCount; i++)
             {
                 players.Add(Player.FromReader(reader));
             }
 
+            rLobbyInfoVersion = reader.GetInt();
+
+            Console.WriteLine($"Receiving LobbyInfo.. v{rLobbyInfoVersion}");
             View.Lobby.Info = info;
             Client.Game.SetState(GameState.LOBBY);
             LobbyView.Players = players;
+        }
+
+        public static void GameStart(NetDataWriter writer)
+        {
+            writer.Put((byte)SMessageType.GameStart);
+            writer.Put(LobbyInfoVersion);
+            writer.Put(Window.Server.PlayerList.Count);
+            Window.Server.PlayerList.ForEach((p) =>
+            {
+                writer.Put(p.ID);
+                writer.Put(p.Entity?.ID ?? -1);
+            });
+        }
+
+        public static void rGameStart(NetDataReader reader)
+        {
+            int lobbyVersion = reader.GetInt();
+            if (lobbyVersion != rLobbyInfoVersion)
+            {
+                throw new Exception($"Client has outdated LobbyInfo version {rLobbyInfoVersion}. How. Should be {lobbyVersion}");
+            }
+            int playerCount = reader.GetInt();
+            // TODO: Let Client remember players to display names on entities etc.
+            Window.Client.Players = [];
+            for (int i = 0; i < playerCount; i++)
+            {
+                byte id = reader.GetByte();
+                int entityId = reader.GetInt();
+                if (id == Window.Client.playerId)
+                {
+                    Window.Client.ControlledEntityID = entityId;
+                }
+                Player player = new()
+                {
+                  ID = id,
+                };
+                Window.Client.Players.Add(player);
+            }
+
+            Stage stage = Stage.GetStage(View.Lobby.Info, Client.Game);
+            Client.Game.CurrentStage = stage;
+            View.CurrentView = View.GameView;
+            Client.Game.SetState(GameState.GAMESTART);
+            ClientMessages.ConfirmGameStart(Window.Client.writer);
         }
 
 

@@ -4,13 +4,11 @@ namespace fiveSeconds
     {
         public Cave1()
         {
-            Generate();
+
         }
 
         public override void Generate()
         {
-            Width = 32;
-            Height = 32;
             Tiles = new Tile[Height][];
             for (int i = 0; i < Height; i++)
             {
@@ -34,14 +32,21 @@ namespace fiveSeconds
 
             AddEntity(new Spider()
             {
-                Position = /* (Width / 3, Height / 3) */ (0,0)
+                Position = /* (Width / 3, Height / 3) */ (0, 0)
             });
 
-            AddEntity(new Aspect()
+            List<Player> players = Window.Server != null ? Window.Server.players.Values.ToList() : Window.Client.Players;
+            for (int i = 0; i < players.Count; i++)
             {
-               Position = (3,3), 
-            });
-            
+                Entity entity = new Aspect()
+                {
+                    Position = (3 + i * 2, 3 + i * 2),
+                };
+                players[i].Entity = entity;
+                AddEntity(entity);
+            }
+
+
 
             CreateEntityMesh();
         }

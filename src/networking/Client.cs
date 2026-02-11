@@ -13,6 +13,8 @@ namespace fiveSeconds
         public byte playerId = 255;
         public int ControlledEntityID;
 
+        public List<Player> Players = [];
+
         public static Game Game;
 
         public Action ActionOnConnect = () => {};
