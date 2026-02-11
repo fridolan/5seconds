@@ -5,10 +5,11 @@ namespace fiveSeconds
     public abstract class View
     {
 
-        public static View GameView = new GameView();
+        public static GameView GameView = new GameView();
+        public static MainMenuView MainMenuView = new MainMenuView();
+        public static LobbyView Lobby = new LobbyView();
 
-
-        public static View CurrentView = GameView;
+        public static View CurrentView = MainMenuView;
 
         public float Zoom = 1/4.0f;
         

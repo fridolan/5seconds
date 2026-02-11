@@ -20,6 +20,12 @@ namespace fiveSeconds
         public static int mana_bar_empty = LoadTexture("images/mana_bar_empty.png");
         public static int slot = LoadTexture("images/slot.png");
         public static int sword = LoadTexture("images/sword.png");
+        public static int directplay_button = LoadTexture("images/directplay_button.png");
+        public static int multiplayer_button = LoadTexture("images/multiplayer_button.png");
+        public static int hud_color = LoadTexture("images/hud_color.png");
+        public static int hud_transparent_color = LoadTexture("images/hud_transparent_color.png");
+        public static int selection_color = LoadTexture("images/selection_color.png");
+        public static int main_menu_background = LoadTexture("images/main_menu_background.png");
 
         public static TextureInfo INFO_hp_bar = new()
         {

@@ -36,7 +36,7 @@ namespace fiveSeconds
         {
             Console.WriteLine("Server receives Client ActionList");
             ActionList actionList = ActionList.FromReader(reader);
-            Player? player = Server.GetPlayerByByte(playerByte);
+            Player? player = Window.Server.GetPlayerByByte(playerByte);
             if (player == null) return;
 
             if (Client.Game.State == GameState.INPUT)

@@ -1,3 +1,4 @@
+using LiteNetLib.Utils;
 using OpenTK.Mathematics;
 
 namespace fiveSeconds
@@ -14,6 +15,7 @@ namespace fiveSeconds
         public Mesh EntityMesh;
         public List<Entity> EntityList = [];
         public int EntityIDCounter = 0;
+        public int seed = 0;
 
         public bool EntityMeshDirty = false;
         public bool TileMeshDirty = false;
@@ -25,6 +27,14 @@ namespace fiveSeconds
         public int Round = 0;
 
         public Entity? PlayerEntity => Window.Client == null ? null : EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
+
+        public static Dictionary<Type, int> GetTypeIndex = new(){
+          { typeof(Cave1), 0 },
+        };
+
+        public static List<Func<Stage>> GetInstance = [
+            () => new Cave1(),
+        ];
 
         public void Tick(float dT, bool first, out bool done)
         {
@@ -229,6 +239,25 @@ namespace fiveSeconds
         public Entity? GetEntityByID(int id)
         {
             return Game.CurrentStage.EntityList.Find(e => e.ID == id);
+        }
+
+        public static Stage FromReader(NetDataReader reader)
+        {
+            int type = reader.GetInt();
+            Stage stage = GetInstance[type]();
+            stage.seed = reader.GetInt();
+            stage.Width = reader.GetInt();
+            stage.Height = reader.GetInt();
+
+            return stage;
+        }
+
+        public void Write(NetDataWriter writer)
+        {
+            writer.Put(GetTypeIndex[this.GetType()]);
+            writer.Put(seed);
+            writer.Put(Width);
+            writer.Put(Height);
         }
 
         #endregion

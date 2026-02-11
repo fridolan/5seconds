@@ -6,12 +6,13 @@ namespace fiveSeconds
     {
         INPUT,
         UPDATE,
-        PAUSE
+        PAUSE,
+        LOBBY
     }
 
     public class Game
     {
-        public GameState State;
+        public GameState State = GameState.LOBBY;
         public Random Random = new();
         public Stage CurrentStage;
 
@@ -73,6 +74,9 @@ namespace fiveSeconds
             else if (state == GameState.PAUSE)
             {
                 State = GameState.PAUSE;
+            } else if(state == GameState.LOBBY)
+            {
+                State = GameState.LOBBY;
             }
         }
 
@@ -96,7 +100,7 @@ namespace fiveSeconds
             {
                 if (Window.Server != null)
                 {
-                    if (ClientsFinishedUpdate.Keys.Count == Server.playerCount - 1)
+                    if (ClientsFinishedUpdate.Keys.Count == Window.Server.playerCount - 1)
                     {
                         State = GameState.INPUT;
                         InputTimeLeft = InputPhaseLength;

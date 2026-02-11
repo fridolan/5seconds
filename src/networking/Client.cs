@@ -15,6 +15,8 @@ namespace fiveSeconds
 
         public static Game Game;
 
+        public Action ActionOnConnect = () => {};
+
         public Client()
         {
             _net = new LiteNetLibTransport();
@@ -25,6 +27,11 @@ namespace fiveSeconds
         public void Start(string ip)
         {
             ((LiteNetLibTransport)_net).StartClient(ip);
+        }
+
+        public void Stop()
+        {
+            _net.Stop();
         }
 
         public void Tick()
@@ -42,6 +49,7 @@ namespace fiveSeconds
 
         public void OnClientConnected(int clientId)
         {
+            ActionOnConnect();
         }
 
         public void OnClientDisconnected(int clientId)

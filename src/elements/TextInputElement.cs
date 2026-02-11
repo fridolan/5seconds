@@ -6,13 +6,15 @@ namespace fiveSeconds
     public class TextInputElement : WithBaseElement
     {
         public int BorderSize = 4;
-        public int BorderTexture = 666;
+        public int BorderTexture = Textures.hud_color;
+        public int ActiveBorderTexture = Textures.selection_color; 
         public bool RenderBorder = true;
+        public bool RenderBorderBottom = false;
         public string Text = "";
         public float TextSize = 1f;
         public bool InputActive = false;
         public Action<string> SubmitAction = (s) => { };
-        public Action<string> OnChange = (s) => {};
+        public Action<string> OnChange = (s) => { };
 
         public float HeaderFactor = 1 / 0.7f;
         public string HeaderText = "";
@@ -22,7 +24,12 @@ namespace fiveSeconds
         public void Render()
         {
             if (RenderBorder)
-                BorderElement.renderBorder(BaseElement, BorderSize, BorderTexture);
+                BorderElement.renderBorder(BaseElement, BorderSize, InputActive ? ActiveBorderTexture : BorderTexture);
+
+            if (RenderBorderBottom)
+            {
+                BorderElement.renderBorderBottom(BaseElement, BorderSize, InputActive ? ActiveBorderTexture : BorderTexture);
+            }
 
             if (RenderHeader)
             {
@@ -52,7 +59,7 @@ namespace fiveSeconds
             };
             TextHandler.renderer.elements.Add(innerText);
 
-            if (InputActive)
+            /* if (InputActive)
             {
                 // Left
                 HudRenderer.renderer.elements.Add(
@@ -60,7 +67,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position,
                         Size = (BorderSize, BaseElement.Size.Y),
-                        TextureId = 666,
+                        TextureId = BorderTexture,
 
                     }
                 );
@@ -70,7 +77,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position,
                         Size = (BaseElement.Size.X, BorderSize),
-                        TextureId = 666,
+                        TextureId = BorderTexture,
                     }
                 );
                 // Right
@@ -79,7 +86,7 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position + (BaseElement.Size.X - BorderSize, 0),
                         Size = (BorderSize, BaseElement.Size.Y),
-                        TextureId = 666,
+                        TextureId = BorderTexture,
                     }
                 );
                 // Bottom
@@ -88,20 +95,23 @@ namespace fiveSeconds
                     {
                         Position = BaseElement.Position + (0, BaseElement.Size.Y - BorderSize),
                         Size = (BaseElement.Size.X, BorderSize),
-                        TextureId = 666,
+                        TextureId = BorderTexture,
                     }
                 );
-            }
+            } */
         }
 
-        public void HandleInputs()
+        private float timeSinceLastRemove = 0;
+
+        public void HandleInputs(float dT)
         {
             KeyboardState keyboard = Input.keyboard;
             MouseState mouse = Input.mouse;
 
             if (InputActive)
             {
-                if(TextHandler.AddKeysToString(keyboard, ref Text))
+                timeSinceLastRemove += dT;
+                if (TextHandler.AddKeysToString(keyboard, ref Text, ref timeSinceLastRemove))
                 {
                     OnChange(Text);
                 }
@@ -110,6 +120,7 @@ namespace fiveSeconds
                     SubmitAction(Text);
                     InputActive = false;
                     Input.currentlyTexting = false;
+                    timeSinceLastRemove = 0;
                 }
 
                 if (Keybind.LEFTCLICK.IsPressed())
@@ -119,6 +130,7 @@ namespace fiveSeconds
                         SubmitAction(Text);
                         InputActive = false;
                         Input.currentlyTexting = false;
+                        timeSinceLastRemove = 0;
                     }
                 }
 

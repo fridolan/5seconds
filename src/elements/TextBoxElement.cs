@@ -6,7 +6,7 @@ namespace fiveSeconds
     public class TextBoxElement() : WithBaseElement
     {
         public int borderSize = 4;
-        public int borderTexture = 666;
+        public int borderTexture = Textures.hud_color;
         public bool renderBorder = true;
 
         public Text text;
@@ -45,7 +45,9 @@ namespace fiveSeconds
             return BaseElement.Hovered(out position);
         }
 
-        public void HandleInputs()
+          private float timeSinceLastRemove = 0;
+
+        public void HandleInputs(float dT)
         {
             KeyboardState keyboard = Input.keyboard;
             MouseState mouse = Input.mouse;
@@ -54,12 +56,14 @@ namespace fiveSeconds
             {
                 if (inputActive)
                 {
-                    TextHandler.AddKeysToString(keyboard, ref text.text);
+                    timeSinceLastRemove += dT;
+                    TextHandler.AddKeysToString(keyboard, ref text.text, ref timeSinceLastRemove);
                     if (keyboard.IsKeyPressed(Keys.Enter))
                     {
                         submitAction(text.text);
                         inputActive = false;
                         Input.currentlyTexting = false;
+                        timeSinceLastRemove = 0;
                     }
 
                     if (Keybind.LEFTCLICK.IsPressed())
@@ -69,6 +73,7 @@ namespace fiveSeconds
                             submitAction(text.text);
                             inputActive = false;
                             Input.currentlyTexting = false;
+                            timeSinceLastRemove = 0;
                         }
                     }
 

@@ -391,8 +391,9 @@ namespace fiveSeconds
 
         }
 
-        public static bool AddKeysToString(KeyboardState keyboard, ref string str)
+        public static bool AddKeysToString(KeyboardState keyboard, ref string str, ref float timeSinceLastRemove)
         {
+            bool isBackspaceUp = timeSinceLastRemove > 0.15f;
             //if()
             int initialLength = str.Length;
             bool changed = false;
@@ -407,8 +408,9 @@ namespace fiveSeconds
                 }
             }
             if (keyboard.IsKeyPressed(Keys.Space)) str += " ";
-            if (keyboard.IsKeyPressed(Keys.Backspace))
+            if (keyboard.IsKeyPressed(Keys.Backspace) || (keyboard.IsKeyDown(Keys.Backspace) && isBackspaceUp))
             {
+                timeSinceLastRemove = 0;
                 if (str.Length > 0) {
                     str = str.Substring(0, str.Length - 1);
                 }
@@ -420,6 +422,10 @@ namespace fiveSeconds
                 {
                     str += (char)(Keys.D0 + i);
                 }
+            }
+            if (keyboard.IsKeyPressed(Keys.Period))
+            {
+                str+= ".";
             }
             return changed || initialLength != str.Length;
         }

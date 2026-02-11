@@ -1,3 +1,5 @@
+using LiteNetLib.Utils;
+
 namespace fiveSeconds
 {
     public class Player
@@ -8,5 +10,22 @@ namespace fiveSeconds
         public byte ID;
         // Only Clientside
         public Entity Entity;
+
+        public static Player FromReader(NetDataReader reader)
+        {
+            Player player = new()
+            {
+                ClientId = reader.GetInt(),
+                ID = reader.GetByte()
+            };
+
+            return player;
+        }
+
+        public void Write(NetDataWriter writer)
+        {
+            writer.Put(ClientId);
+            writer.Put(ID);
+        }
     }
 }

@@ -5,8 +5,8 @@ namespace fiveSeconds
     public class BorderElement() : WithBaseElement
     {
         public int borderSize = 4;
-        public int borderTexture = 666;
-        
+        public int borderTexture = Textures.hud_color;
+
         public bool RenderBaseElement = false;
 
         public void Render()
@@ -24,6 +24,18 @@ namespace fiveSeconds
                     Rotation = BaseElement.Rotation,
                 });
             }
+        }
+
+        public static void renderBorderBottom(HudElement baseElement, int borderSize, int borderTexture)
+        {
+            HudRenderer.renderer.elements.Add(
+                new HudElement
+                {
+                    Position = baseElement.Position + (0, baseElement.Size.Y - borderSize),
+                    Size = (baseElement.Size.X, borderSize),
+                    TextureId = borderTexture,
+                }
+            );
         }
 
         public static void renderBorder(HudElement baseElement, int borderSize, int borderTexture)

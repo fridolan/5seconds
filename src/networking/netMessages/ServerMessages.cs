@@ -23,7 +23,8 @@ namespace fiveSeconds
         PlayerID,
         ActionLists,
         SetGameState,
-        Entities
+        Entities,
+        LobbyInfo
     }
 
     public static class ServerMessages
@@ -34,6 +35,7 @@ namespace fiveSeconds
             { SMessageType.ActionLists, rActionlists },
             { SMessageType.SetGameState, rGameState },
             { SMessageType.Entities, rEntities },
+            { SMessageType.LobbyInfo, rLobbyInfo },
         };
 
         public static void PlayerID(NetDataWriter writer, byte playerID, Entity entity)
@@ -126,6 +128,41 @@ namespace fiveSeconds
                 stage.AddEntity(entity);
             }
         }
+
+        public static void LobbyInfo(NetDataWriter writer)
+        {
+            Console.WriteLine("Sending LobbyInfo..");
+            writer.Put((byte)SMessageType.LobbyInfo);
+            View.Lobby.Info.Write(writer);
+
+            List<Player> players = Window.Server.players.Values.ToList();
+            writer.Put(players.Count);
+
+            players.ForEach((p) =>
+            {
+               p.Write(writer);
+            });
+        }
+
+        public static void rLobbyInfo(NetDataReader reader)
+        {
+            Console.WriteLine("Receiving LobbyInfo..");
+            LobbyView.LobbyInfo info = LobbyView.LobbyInfo.FromReader(reader);
+
+            List<Player> players = [];
+
+            int playerCount = reader.GetInt();
+            for(int i = 0; i < playerCount; i++)
+            {
+                players.Add(Player.FromReader(reader));
+            }
+
+            View.Lobby.Info = info;
+            Client.Game.SetState(GameState.LOBBY);
+            LobbyView.Players = players;
+        }
+
+
     }
 
 }

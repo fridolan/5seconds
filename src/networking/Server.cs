@@ -11,18 +11,18 @@ namespace fiveSeconds
         public NetDataWriter bWriter = new();
         public Dictionary<int, NetDataWriter> cWriters = [];
 
-        public static Dictionary<byte, Player> players = [];
-        public static Dictionary<byte, int> pIdToCId = [];
-        public static Dictionary<int, byte> CIdToPId = [];
-        private static byte idCounter = 0;
-        public static int playerCount = 0;
+        public Dictionary<byte, Player> players = [];
+        public Dictionary<byte, int> pIdToCId = [];
+        public Dictionary<int, byte> CIdToPId = [];
+        private byte idCounter = 0;
+        public int playerCount = 0;
 
         public double writeTickTimer = 0;
         public double writeInterval = 1 / 60f;
         public double stateTickTimer = 0;
         public double stateTickInterval = 1 / 10f;
 
-        public static Player AddPlayer(int clientId, int x, int y)
+        public Player AddPlayer(int clientId, int x, int y)
         {
             byte id = idCounter++;
             pIdToCId[id] = clientId;
@@ -54,6 +54,10 @@ namespace fiveSeconds
             _net.Start();
         }
 
+        public void Stop()
+        {
+            _net.Stop();
+        }
 
         public void Tick(double time)
         {
@@ -142,17 +146,17 @@ namespace fiveSeconds
             }
         }
 
-        public static NetDataWriter GetWriterByPlayerByte(byte playerByte)
+        public NetDataWriter GetWriterByPlayerByte(byte playerByte)
         {
             return Window.Server.cWriters[pIdToCId[playerByte]];
         }
 
-        public static Player GetPlayerByClientId(int clientId)
+        public Player GetPlayerByClientId(int clientId)
         {
             return players[CIdToPId[clientId]];
         }
 
-        public static Player? GetPlayerByByte(byte playerByte)
+        public Player? GetPlayerByByte(byte playerByte)
         {
             players.TryGetValue(playerByte, out Player player);
             return player;

@@ -63,7 +63,7 @@ namespace fiveSeconds
             //Console.WriteLine("Server broadcast");
             foreach (var peer in _peers.Values)
             {
-               // Console.WriteLine($"Send to {peer.Id}");
+                // Console.WriteLine($"Send to {peer.Id}");
                 peer.Send(writer, DeliveryMethod.ReliableOrdered);
             }
         }
@@ -73,12 +73,15 @@ namespace fiveSeconds
             if (_isServer)
             {
                 _peers[peer.Id] = peer;
-                _handler?.OnClientConnected(peer.Id);
+                Console.WriteLine($"Peer {peer.Id} connected to Server");
             }
             else
             {
                 _serverPeer = peer;
+                Console.WriteLine($"Connected to Server {peer.Id}");
             }
+
+            _handler?.OnClientConnected(peer.Id);
         }
 
         public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -86,8 +89,10 @@ namespace fiveSeconds
             if (_isServer)
             {
                 _peers.Remove(peer.Id);
-                _handler?.OnClientDisconnected(peer.Id);
+                Console.WriteLine($"Peer {peer.Id} disconnected from Server: {disconnectInfo.SocketErrorCode} {disconnectInfo.Reason}");
             }
+
+            _handler?.OnClientDisconnected(peer.Id);
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
@@ -117,10 +122,10 @@ namespace fiveSeconds
         ////////////////////////////////////////////////////////////
 
         /** Für ChannelNumber falls gebraucht */
-       /*  void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
-        {
-            throw new NotImplementedException();
-        } */
+        /*  void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
+         {
+             throw new NotImplementedException();
+         } */
 
         /** Für Discovery, also Pakete von nicht verbundenen Clients */
         void INetEventListener.OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)

@@ -3,7 +3,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace fiveSeconds
 {
-    public class ListElement2 : WithBaseElement
+    public class ElementListElement : WithBaseElement
     {
         public int BorderSize = 4;
         public int BorderTexture = Textures.hud_color;

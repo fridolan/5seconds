@@ -145,12 +145,12 @@ namespace fiveSeconds
                 InitServer();
 
             if (Client == null && keyboard.IsKeyPressed(Keys.I))
-                InitClient(Server != null);
+                InitClient("localhost",Server != null);
 
             if (Client == null && keyboard.IsKeyPressed(Keys.P))
             {
                 if (Server == null) InitServer();
-                InitClient(true);
+                InitClient("localhost", true);
             }
 
             /* if (keyboard.IsKeyPressed(Keys.M))
@@ -166,10 +166,10 @@ namespace fiveSeconds
             Console.WriteLine("Start Server");
         }
 
-        public static void InitClient(bool local)
+        public static void InitClient(string address, bool local)
         {
             Client = new Client();
-            Client.Start(local ? "localhost" : "idolfan.ddns.net");
+            Client.Start(local ? "localhost" : address);
             Console.WriteLine("Start Client");
             Client.Game = new Game();
         }

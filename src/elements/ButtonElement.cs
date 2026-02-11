@@ -6,9 +6,9 @@ namespace fiveSeconds
     public class ButtonElement : WithBaseElement
     {
         public int BorderSize = 4;
-        public int BorderTexture = 666;
-        public int HoverTexture = 666;
-        public int ClickTexture = 666;
+        public int BorderTexture = Textures.hud_color;
+        public int HoverTexture = Textures.hud_transparent_color;
+        public int ClickTexture = Textures.selection_color;
         public int TextureId = 666;
         public Vector4 TexCoords = (0, 0, 1, 1);
         public int Rotation = 0;
@@ -20,6 +20,8 @@ namespace fiveSeconds
         public bool RenderTexture = false;
         public bool RenderHover = true;
         public bool RenderClick = true;
+        public bool RenderBadEffect = false;
+        public bool RenderBorderBottom = false;
 
         public string Text = "";
         public float TextSize = 1f;
@@ -27,6 +29,10 @@ namespace fiveSeconds
 
         public float HeaderFactor = 1 / 0.7f;
         public string HeaderText = "";
+
+        public Vector3 TextColor = (1, 1, 1);
+        public Vector3 BadEffectColor = (1, 1, 1);
+        public float BadEffectMultiplier = 1.02f;
 
         private float ClickTime = 0f;
 
@@ -37,6 +43,11 @@ namespace fiveSeconds
             if (RenderBorder)
             {
                 BorderElement.renderBorder(BaseElement, BorderSize, BorderTexture);
+            }
+
+            if (RenderBorderBottom)
+            {
+                BorderElement.renderBorderBottom(BaseElement, BorderSize, BorderTexture);
             }
 
             if (ClickTime > 0 && RenderClick)
@@ -74,6 +85,23 @@ namespace fiveSeconds
                     TexCoords = BaseElement.TexCoords,
                     Rotation = BaseElement.Rotation,
                 });
+            }
+
+            if (RenderBadEffect)
+            {
+
+                // Inner Text
+                Text innerText = new()
+                {
+                    text = Text,
+                    x = BaseElement.Position.X + BaseElement.Size.X / 2,
+                    y = BaseElement.Position.Y + BaseElement.Size.Y / 2,
+                    scale = TextSize * BadEffectMultiplier,
+                    color = BadEffectColor,
+                    alignX = TextAlignX.CENTER,
+                    alignY = TextAlignY.CENTER
+                };
+                TextHandler.renderer.elements.Add(innerText);
             }
 
             if (RenderTexture)
