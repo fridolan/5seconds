@@ -20,6 +20,8 @@ namespace fiveSeconds
         private Vector2 margin = new Vector2(Window.Width, Window.Width) / 128;
 
         public AbilitySlot[] AbilitySlots = AbilitySlot.InitArray();
+        public Ability MoveAbility;
+        public Ability CatchAbility;
 
         public override void OnLoad()
         {
@@ -176,22 +178,28 @@ namespace fiveSeconds
                     hpBarFilling.Render(dT);
                     manaBarFilling.Render(dT);
                 }
+                { // Other Abilities
+                    MoveAbility = c.Abilities[0];
+                    CatchAbility = c.Abilities[1];
+                }
                 { // Ability Slots
-                    AbilitySlots[0].Ability = c.Abilities[0];
+                    AbilitySlots[0].Ability = c.Abilities[2];
                     abilitySlotsBackground.Render();
 
                     for (int i = 0; i < AbilitySlots.Length; i++)
                     {
+                        AbilitySlot slot = AbilitySlots[i];
                         HudElement element = new()
                         {
-                            Position = AbilitySlots[i].Position,
-                            Size = AbilitySlots[i].Size,
+
+                            Position = slot.Position,
+                            Size = slot.Size,
                             TextureId = Textures.slot,
                             RenderInnerElement = true,
                             InnerMarginRatio = Textures.INFO_slot.MarginToSizeRatio,
                             InnerElement = new()
                             {
-                                TextureId = AbilitySlots[i].Ability.Icon,
+                                TextureId = slot.Ability == null ? 0 : slot.Ability.Icon,
                             }
                         };
 
@@ -200,11 +208,11 @@ namespace fiveSeconds
                 }
                 { // ActionList
                     ActionList actionList = stage.PlayerEntity.ActionList;
-                    List<SAction> actions = actionList.Actions.GetRange(actionList.NextActionIndex, actionList.Actions.Count - actionList.NextActionIndex);
+                    List<AbilityAction> actions = actionList.Actions.GetRange(actionList.NextActionIndex, actionList.Actions.Count - actionList.NextActionIndex);
 
                     for (int i = 0; i < actions.Count; i++)
                     {
-                        SAction action = actions[i];
+                        AbilityAction action = actions[i];
 
                         Vector2 size = (Window.Width / 16, Window.Width / 16);
                         HudElement element = new()
@@ -215,7 +223,7 @@ namespace fiveSeconds
                             InnerMarginRatio = Textures.INFO_slot.MarginToSizeRatio,
                             InnerElement = new()
                             {
-                                TextureId = action.Icon,
+                                TextureId = action.Ability.Icon,
                             },
                             RenderInnerElement = true,
                         };
@@ -284,7 +292,7 @@ namespace fiveSeconds
             // Path lines
             if (stage.PlayerEntity is Entity playerEntity)
             {
-                List<Vector2i> goals = [.. playerEntity.ActionList.Actions.OfType<IStartGoalInput>().Select(a => a.Goal)];
+                List<Vector2i> goals = [.. playerEntity.ActionList.Actions.Select(action => action.Input).Where(action => action is IInputStartGoal).Select(a => ((IInputStartGoal)a).Goal)];
                 goals.ForEach((g) =>
                 {
                     SpecialTileMesh.RectAt(g, SpecialTileIndeces.HIGHLIGHT, (1, 1));
@@ -366,6 +374,8 @@ namespace fiveSeconds
             }
         }
 
+        private AbilityAction? newAction = null;
+
         public void HandleGameplayInputs(FrameEventArgs args)
         {
             float dT = (float)args.Time;
@@ -398,61 +408,99 @@ namespace fiveSeconds
 
             if (validHover && playerEntity != null)
             {
-                if (Keybind.LEFTCLICK.IsPressed())
-                {
-                    bool relative = Keybind.SHIFT.IsDown();
-                    MoveEntityAction action = new()
-                    {
-                        CancelOnDisplace = true,
-                        EntityID = playerEntity.ID,
-                        Relative = relative,
-                        Goal = HoveredTile,
-                        Start = playerEntity.Position,
-                    };
+                /*  if (Keybind.LEFTCLICK.IsPressed())
+                 {
+                     bool relative = Keybind.SHIFT.IsDown();
+                     MoveEntityAbility action = new()
+                     {
+                         CancelOnDisplace = true,
+                         EntityID = playerEntity.ID,
+                         Relative = relative,
+                         Goal = HoveredTile,
+                         Start = playerEntity.Position,
+                     };
 
-                    //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
+                     //Console.WriteLine($"Move Player Entity {playerEntity.ID} {HoveredTile}");
 
-                    playerEntity.AddAction(action);
-                }
+                     playerEntity.AddAction(action);
+                 } */
 
                 Entity? entityAtHover = stage.Entities[HoveredTile.Y][HoveredTile.X];
 
-                if (Keybind.RIGHTCLICK.IsPressed() && entityAtHover != null)
-                {
-                    CatchEntityAction action = new()
-                    {
-                        CancelOnDisplace = false,
-                        EntityID = playerEntity.ID,
-                        ToEntityID = entityAtHover.ID,
-                    };
+                /*                 if (Keybind.RIGHTCLICK.IsPressed() && entityAtHover != null)
+                                {
+                                    CatchEntityAbility action = new()
+                                    {
+                                        CancelOnDisplace = false,
+                                        EntityID = playerEntity.ID,
+                                        ToEntityID = entityAtHover.ID,
+                                    };
 
-                    playerEntity.AddAction(action);
-                }
+                                    playerEntity.AddAction(action);
+                                } */
 
                 AbilityContext context = new()
                 {
+                    HoveredEntity = entityAtHover,
                     SourceEntity = playerEntity,
-                    TargetEntity = entityAtHover,
+                    HoveredTile = HoveredTile,
                     Stage = stage,
-                    TargetTile = HoveredTile,
                 };
 
-                if (Keybind.ONE.IsPressed()) Ability.Use(AbilitySlots[0].Ability, context);
-                if (Keybind.TWO.IsPressed()) Ability.Use(AbilitySlots[1].Ability, context);
-                if (Keybind.THREE.IsPressed()) Ability.Use(AbilitySlots[2].Ability, context);
-                if (Keybind.FOUR.IsPressed()) Ability.Use(AbilitySlots[3].Ability, context);
-                if (Keybind.FIVE.IsPressed()) Ability.Use(AbilitySlots[4].Ability, context);
-                if (Keybind.SIX.IsPressed()) Ability.Use(AbilitySlots[5].Ability, context);
-                if (Keybind.SEVEN.IsPressed()) Ability.Use(AbilitySlots[6].Ability, context);
-                if (Keybind.EIGHT.IsPressed()) Ability.Use(AbilitySlots[7].Ability, context);
-                if (Keybind.NINE.IsPressed()) Ability.Use(AbilitySlots[8].Ability, context);
-                if (Keybind.ZERO.IsPressed()) Ability.Use(AbilitySlots[9].Ability, context);
+                (Keybind keybind, Ability ability)[] abilityKeybinds = [
+                    (Keybind.LEFTCLICK, MoveAbility),
+                    (Keybind.ONE, AbilitySlots[0].Ability),
+                    (Keybind.TWO, AbilitySlots[1].Ability),
+                    (Keybind.THREE, AbilitySlots[2].Ability),
+                    (Keybind.FOUR, AbilitySlots[3].Ability),
+                    (Keybind.FIVE, AbilitySlots[4].Ability),
+                    (Keybind.SIX, AbilitySlots[5].Ability),
+                    (Keybind.SEVEN, AbilitySlots[6].Ability),
+                    (Keybind.EIGHT, AbilitySlots[7].Ability),
+                    (Keybind.NINE, AbilitySlots[8].Ability),
+                    (Keybind.ZERO, AbilitySlots[9].Ability),
+                ];
+
+
+                for (int i = 0; i < abilityKeybinds.Length; i++)
+                {
+                    Keybind keybind = abilityKeybinds[i].keybind;
+                    Ability ability = abilityKeybinds[i].ability;
+                    if (ability == null) continue;
+
+                    if (keybind.IsPressed())
+                    {
+                        Console.WriteLine("init abilityinput");
+                        newAction = new()
+                        {
+                            Ability = ability,
+                            Input = ability.GetNewAbilityInput()
+                        };
+                    }
+                    if (keybind.IsDown() && newAction != null)
+                    {
+                        if (Keybind.CANCEL.IsPressed()) newAction = null;
+                        else newAction.Input.HandleAbilityInput(context);
+                    }
+                    if (keybind.IsReleased() && newAction != null)
+                    {
+                        Console.WriteLine("submit abilityinput");
+                        //ability.SubmitAbilityInput(playerEntity);
+
+                        if (newAction.Input.Complete)
+                        {
+                            playerEntity.AddAction(newAction);
+                            newAction.Input.Updating = false;
+                        }
+                        else newAction = null;
+                    }
+                }
 
                 if (Keybind.BACK.IsPressed())
                 {
-                    if(playerEntity.ActionList.Actions.Count > 0)
+                    if (playerEntity.ActionList.Actions.Count > 0)
                     {
-                        playerEntity.RemoveAction(playerEntity.ActionList.Actions.Last());
+                        playerEntity.RemoveActionAtIndex(playerEntity.ActionList.Actions.Count - 1);
                     }
                 }
             }

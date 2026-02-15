@@ -1,54 +1,60 @@
+using LiteNetLib.Utils;
 using OpenTK.Mathematics;
 
 namespace fiveSeconds
 {
-    public class MoveEntityAction : SAction, IStartGoalInput, IEntityIDInput, ICancelOnDisplaceInput, IRelativeInput
+    public class MoveEntityAbility : Ability
     {
-        public int EntityID {get; set;}
-        public bool CancelOnDisplace {get; set;} = true;
-        public bool Relative {get; set;} = false;
-        public Vector2i Start { get; set; }
-        public Vector2i Goal { get; set; }
         public override int Icon => Textures.move;
+
 
         private float TimePerStep = 0.5f;
         private int StepsTaken = 0;
 
         #region Activations
-        public override void Begin(Game game)
+        public override void Begin(AbilityAction action)
         {
-            Stage stage = game.CurrentStage;
-            Entity entity = stage.GetEntityByID(EntityID);
+            AutoStartGoalInput input = (AutoStartGoalInput)action.Input;
+            
+            Stage stage = Client.Game.CurrentStage;
+            Entity entity = stage.GetEntityByID(input.EntityID);
             if (entity == null) throw new Exception("MoveEntityAction no entity");
 
-            if (Relative) Goal = Goal - Start + entity.Position;
+            if (input.Relative) input.Goal = input.Goal - input.Start + entity.Position;
 
-            List<Vector2i> path = stage.GetPathTo(EntityID, Goal);
+            StepsTaken = 0;
 
-            stage.MoveEntity(EntityID, path[0]);
-            NextActivationTime = (StepsTaken + 1) * TimePerStep;
-            NextActivation = TakeStep;
+            List<Vector2i> path = stage.GetPathTo(input.EntityID, input.Goal);
+
+            stage.MoveEntity(input.EntityID, path[0]);
+            action.NextActivationTime = (StepsTaken + 1) * TimePerStep;
+            action.NextActivation = TakeStep;
         }
 
-        private void TakeStep(Game game)
+        private void TakeStep(AbilityAction action)
         {
+            AutoStartGoalInput input = (AutoStartGoalInput)action.Input;
             //Console.WriteLine($"TakeStep {Path[NextStep]} {EntityID}");
-            List<Vector2i> path = game.CurrentStage.GetPathTo(EntityID, Goal);
+            List<Vector2i> path = Client.Game.CurrentStage.GetPathTo(input.EntityID, input.Goal);
             if (path.Count < 2)
             {
-                Finished = true;
+                action.Finished = true;
                 return;
             }
-            game.CurrentStage.MoveEntity(EntityID, path[1]);
+            Client.Game.CurrentStage.MoveEntity(input.EntityID, path[1]);
             StepsTaken++;
-            NextActivationTime = (StepsTaken + 1) * TimePerStep;
+            action.NextActivationTime = (StepsTaken + 1) * TimePerStep;
 
             if (path.Count <= 2)
             {
-                Finished = true;
+                action.Finished = true;
                 return;
             }
         }
+
+        public override AbilityInput GetNewAbilityInput() => new AutoStartGoalInput();
+
+
         #endregion
     }
 }

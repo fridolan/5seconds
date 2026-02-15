@@ -70,10 +70,10 @@ namespace fiveSeconds
                 ActionList nextList = ActionLists.MinBy(l => l.GetNextTiming());
                 if (nextList != null && nextList.GetNextTiming() <= roundTime)
                 {
-                    nextList.Act(Game);
+                    nextList.Act();
                 }
 
-                waitingActionLists.ForEach(l => l.Act(Game));
+                waitingActionLists.ForEach(l => l.Act());
 
                 done = false;
             }
@@ -162,6 +162,14 @@ namespace fiveSeconds
             if (!ValidTilePos(Position)) return false;
 
             Entities[Position.Y][Position.X] = null;
+
+            if (entity is ICombat c)
+            {
+                List<Ability> abilities = c.Abilities;
+                int count = Client.Game.Abilities.RemoveAll(a => abilities.Contains(a));
+                Console.WriteLine($"Removed {count} of {abilities.Count} Abilities as entity {entity.ID} was removed");
+            }
+
             EntityList.Remove(entity);
             EntityMeshDirty = true;
 

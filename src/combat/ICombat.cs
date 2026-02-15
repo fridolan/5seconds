@@ -4,9 +4,16 @@ namespace fiveSeconds
 {
     public interface ICombat
     {
-        public Stats BaseStats {get; set;}
+        public Stats BaseStats { get; set; }
         public Stats Stats { get; set; }
-        public List<Ability> Abilities {get; set;}
+        public List<Ability> Abilities { get; set; }
+
+        public bool CostMana(int amount)
+        {
+            if (Stats.CurrentMana < amount) return false;
+            Stats.CurrentMana -= amount;
+            return true;
+        }
 
         public void Write(NetDataWriter writer)
         {
@@ -19,6 +26,7 @@ namespace fiveSeconds
             BaseStats = Stats.FromReader(reader);
             Stats = Stats.FromReader(reader);
         }
+
     }
 
 

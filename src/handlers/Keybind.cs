@@ -137,7 +137,13 @@ namespace fiveSeconds
 
         public static Keybind SCROLLDOWN = new()
         {
-            MouseButtons = []
+            MouseButtons = [],
+        };
+
+        public static Keybind CANCEL = new()
+        {
+            MouseButtons = [(int)MouseButton.Right],
+            KeyboardButtons = [],
         };
 
         public bool IsPressed()

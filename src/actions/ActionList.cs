@@ -4,9 +4,9 @@ namespace fiveSeconds
 {
     public class ActionList
     {
-        public List<SAction> Actions = [];
+        public List<AbilityAction> Actions = [];
         public int NextActionIndex = 0;
-        public SAction? NextAction => NextActionIndex >= Actions.Count ? null : Actions[NextActionIndex];
+        public AbilityAction? NextAction => NextActionIndex >= Actions.Count ? null : Actions[NextActionIndex];
         public bool Finished => Actions.Count <= NextActionIndex;
         public float Timer = 0;
         public bool Waiting => NextAction is {Waiting: true};
@@ -18,10 +18,10 @@ namespace fiveSeconds
             else return float.MaxValue;
         }
 
-        public void Act(Game game)
+        public void Act()
         {
-            SAction action = Actions[NextActionIndex];
-            action.Execute(game);
+            AbilityAction action = Actions[NextActionIndex];
+            action.Execute();
             if (action.Finished)
             {
                 NextActionIndex++;
@@ -41,9 +41,10 @@ namespace fiveSeconds
             writer.Put(NextActionIndex);
             writer.Put(Timer);
             writer.Put(Actions.Count);
-            for (int i = 0; i < Actions.Count; i++)
+            for(int i = 0; i < Actions.Count; i++)
             {
-                Actions[i].Write(writer);
+                AbilityAction action = Actions[i];
+                action.Write(writer);
             }
         }
 
@@ -58,11 +59,11 @@ namespace fiveSeconds
 
             Console.WriteLine($"ActionList from Reader, NextActionIndex {newList.NextActionIndex} Timer {newList.Timer}");
 
-            List<SAction> actions = [];
+            List<AbilityAction> actions = [];
             int actionCount = reader.GetInt();
             for (int i = 0; i < actionCount; i++)
             {
-                SAction action = SAction.FromReader(reader);
+                AbilityAction action = AbilityAction.FromReader(reader);
                 actions.Add(action);
             }
 

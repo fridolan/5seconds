@@ -12,7 +12,7 @@ namespace fiveSeconds
             Stats = new();
             BaseStats = new();
             Abilities = [
-                new MeleeAttackAbility(),
+                new MeleeAttackEntityAbility(Client.Game.Random),
             ];
         }
     }

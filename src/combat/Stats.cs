@@ -79,13 +79,6 @@ namespace fiveSeconds
         public int[] DamageTakeMults { get; set; } = DamageType.FilledArray(100);
         public int[] StatusEffects { get; set; } = StatusEffect.FilledArray(0);
 
-        public bool CostMana(int amount)
-        {
-            if(CurrentMana < amount) return false;
-            CurrentMana -= amount;
-            return true;
-        }
-
         public Stats GetCopy()
         {
             return new()

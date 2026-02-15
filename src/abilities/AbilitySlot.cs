@@ -15,7 +15,7 @@ namespace fiveSeconds
             {
                 array[i] = new AbilitySlot()
                 {
-                    Ability = new PlaceholderAbility(),
+                    
                 };
             }
 

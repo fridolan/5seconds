@@ -2,39 +2,29 @@ using OpenTK.Mathematics;
 
 namespace fiveSeconds
 {
-    public interface IStartGoalInput
+    public interface IInputStartGoal
     {
         public Vector2i Start {get; set;}
         public Vector2i Goal {get; set;}
     }
 
-    public interface IEntityIDInput
+    public interface IInputEntityID
     {
         public int EntityID {get; set;}
     }
 
-    public interface ICancelOnDisplaceInput
+    public interface IInputCancelOnDisplace
     {
         public bool CancelOnDisplace {get; set;}
     }
 
-    public interface IRelativeInput
+    public interface IInputRelative
     {
         public bool Relative {get; set;}
     }
 
-    public interface IToEntityIDInput
+    public interface IInputToEntityID
     {
         public int ToEntityID {get; set;}
-    }
-
-    public interface IWaitInput
-    {
-        public bool Wait {get; set;}
-    }
-
-    public interface IDamagePercentInput
-    {
-        public int DamagePercent {get; set;}
     }
 }

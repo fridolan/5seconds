@@ -30,6 +30,8 @@ namespace fiveSeconds
 
     public static class ServerMessages
     {
+        private static bool debug = false;
+
         public static Dictionary<SMessageType, Action<NetDataReader>> MessageHandlers = new()
         {
             { SMessageType.PlayerID, rPlayerID },

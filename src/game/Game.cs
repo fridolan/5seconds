@@ -20,8 +20,11 @@ namespace fiveSeconds
         public bool ManuallyPaused = false;
         public float InputTimeLeft = 0;
         public float InputPhaseLength = 6;
+        public int AbilityIDCounter = 0;
 
         private bool firstUpdateTick = false;
+
+        public List<Ability> Abilities = [];
 
         public void OnLoad()
         {

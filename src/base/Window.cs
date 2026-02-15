@@ -17,6 +17,9 @@ namespace fiveSeconds
         public static Server Server;
         public static Client Client;
 
+        public static string logFilePath;
+        private static readonly object _lock = new();
+
         public Window() : base(
             new GameWindowSettings
             {
@@ -145,7 +148,7 @@ namespace fiveSeconds
                 InitServer();
 
             if (Client == null && keyboard.IsKeyPressed(Keys.I))
-                InitClient("localhost",Server != null);
+                InitClient("localhost", Server != null);
 
             if (Client == null && keyboard.IsKeyPressed(Keys.P))
             {
@@ -172,6 +175,28 @@ namespace fiveSeconds
             Client.Start(local ? "localhost" : address);
             Console.WriteLine("Start Client");
             Client.Game = new Game();
+        }
+
+        public static void StartLogging()
+        {
+            string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+
+            if (!Directory.Exists(logDirectory))
+                Directory.CreateDirectory(logDirectory);
+
+            string fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
+            logFilePath = Path.Combine(logDirectory, fileName);
+        }
+
+        public static void Log(string message)
+        {
+            lock (_lock)
+            {
+                File.AppendAllText(
+                    logFilePath,
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}{Environment.NewLine}"
+                );
+            }
         }
 
     }

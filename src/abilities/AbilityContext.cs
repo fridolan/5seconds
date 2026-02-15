@@ -4,9 +4,10 @@ namespace fiveSeconds
 {
     public class AbilityContext
     {
-        public Entity SourceEntity;
-        public Entity? TargetEntity;
-        public Vector2i TargetTile;
+        public Vector2i HoveredTile;
+        public Entity? HoveredEntity;
         public Stage Stage;
+        public Entity SourceEntity;
+        public bool ValidHover => Stage.ValidTilePos(HoveredTile);
     }
 }

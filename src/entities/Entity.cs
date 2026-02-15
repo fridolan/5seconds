@@ -53,8 +53,9 @@ namespace fiveSeconds
             () => new Spider(),
         ];
 
-        public void AddAction(SAction action)
+        public void AddAction(AbilityAction action)
         {
+            Console.WriteLine("AddAction");
             if (Client.Game.State == GameState.INPUT)
             {
                 ActionList.Actions.Add(action);
@@ -62,11 +63,11 @@ namespace fiveSeconds
             }
         }
 
-        public void RemoveAction(SAction action)
+        public void RemoveActionAtIndex(int index)
         {
             if (Client.Game.State == GameState.INPUT)
             {
-                ActionList.Actions.Remove(action);
+                ActionList.Actions.RemoveAt(index);
                 ClientMessages.FullActionList(Window.Client.writer, ActionList);
             }
         }
