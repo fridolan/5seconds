@@ -7,9 +7,7 @@ namespace fiveSeconds
     {
         public override int Icon => Textures.move;
 
-
-        private float TimePerStep = 0.5f;
-        private int StepsTaken = 0;
+        private long TimePerStep = 1_000_000 / 2;
 
         #region Activations
         public override void Begin(AbilityAction action)
@@ -22,12 +20,12 @@ namespace fiveSeconds
 
             if (input.Relative) input.Goal = input.Goal - input.Start + entity.Position;
 
-            StepsTaken = 0;
+            action.StepsTaken = 0;
 
             List<Vector2i> path = stage.GetPathTo(input.EntityID, input.Goal);
 
             stage.MoveEntity(input.EntityID, path[0]);
-            action.NextActivationTime = (StepsTaken + 1) * TimePerStep;
+            action.NextActivationTime = (action.StepsTaken + 1) * TimePerStep;
             action.NextActivation = TakeStep;
         }
 
@@ -42,8 +40,8 @@ namespace fiveSeconds
                 return;
             }
             Client.Game.CurrentStage.MoveEntity(input.EntityID, path[1]);
-            StepsTaken++;
-            action.NextActivationTime = (StepsTaken + 1) * TimePerStep;
+            action.StepsTaken++;
+            action.NextActivationTime = (action.StepsTaken + 1) * TimePerStep;
 
             if (path.Count <= 2)
             {

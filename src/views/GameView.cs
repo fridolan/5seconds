@@ -16,6 +16,7 @@ namespace fiveSeconds
 
         public Entity? ControlledEntity;
         private Mesh SpecialTileMesh = new();
+        private Mesh EffectMesh = new();
 
         private Vector2 margin = new Vector2(Window.Width, Window.Width) / 128;
 
@@ -33,8 +34,10 @@ namespace fiveSeconds
         {
             if (Client.Game?.CurrentStage == null) return;
 
-            RenderStage();
-            RenderHUD((float)args.Time);
+            float dT = (float)args.Time;
+
+            RenderStage(dT);
+            RenderHUD(dT);
 
             HudRenderer.Draw(true);
             TextHandler.renderer.Draw();
@@ -153,7 +156,7 @@ namespace fiveSeconds
 
             if (Client.Game == null) return;
 
-            remainingTimeBar.Size.X = (Client.Game.InputTimeLeft / Client.Game.InputPhaseLength) * Window.Width;
+            remainingTimeBar.Size.X = (float)(Client.Game.InputTimeLeft / (double)Client.Game.InputPhaseLength) * Window.Width;
             remainingTimeBar.Render();
 
             if (stage.PlayerEntity is ICombat c)
@@ -184,6 +187,7 @@ namespace fiveSeconds
                 }
                 { // Ability Slots
                     AbilitySlots[0].Ability = c.Abilities[2];
+                    AbilitySlots[1].Ability = c.Abilities[3];
                     abilitySlotsBackground.Render();
 
                     for (int i = 0; i < AbilitySlots.Length; i++)
@@ -235,7 +239,7 @@ namespace fiveSeconds
             }
         }
 
-        private void RenderStage()
+        private void RenderStage(float dT)
         {
             if (Client.Game.CurrentStage == null) return;
 
@@ -313,6 +317,22 @@ namespace fiveSeconds
 
             GL.BindVertexArray(SpecialTileMesh.Vao);
             GL.DrawElements(PrimitiveType.Triangles, SpecialTileMesh.IndexCount, DrawElementsType.UnsignedInt, 0);
+
+            // Render Effects
+            EffectMesh.Clear();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, Textures.effect_atlas);
+
+            stage.Projectiles.ForEach((p) =>
+            {
+                p.DrawCallBack(p,EffectMesh, dT);
+            });
+
+            EffectMesh.UploadToGPU();
+
+            GL.BindVertexArray(EffectMesh.Vao);
+            GL.DrawElements(PrimitiveType.Triangles, EffectMesh.IndexCount, DrawElementsType.UnsignedInt, 0);
+
         }
 
         public override void HandleInputs(FrameEventArgs args)

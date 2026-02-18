@@ -7,16 +7,21 @@ namespace fiveSeconds
         public Ability Ability;
         public AbilityInput Input;
 
-        public float TimePassed = 0;
-        public float NextActivationTime = 0;
+        public long TimePassed = 0;
+        public long NextActivationTime = 0;
+        public long RoundTime;
         public Action<AbilityAction> NextActivation;
         public bool Finished = false;
         public bool Begun = false;
         public bool Waiting = false;
 
+        public Entity ToEntity;
+        public List<ICombat> AlreadyHit = [];
+        public int StepsTaken;
+
         public void Execute()
         {
-            float now = NextActivationTime;
+            long now = NextActivationTime;
             if (Begun == false)
             {
                 Ability.Begin(this);

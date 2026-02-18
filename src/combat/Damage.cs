@@ -6,7 +6,7 @@ namespace fiveSeconds
         public int ResultingAmount;
         public DamageType Type;
 
-        private static bool debugDamageC = true;
+        private static bool debugDamageC = false;
         public static int DamageC(CombatContext combatContext)
         {
             ICombat target = combatContext.Target;

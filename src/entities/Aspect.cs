@@ -16,6 +16,7 @@ namespace fiveSeconds
                 new MoveEntityAbility(),
                 new CatchEntityAbility(),
                 new MeleeAttackEntityAbility(Client.Game.Random),
+                new FireballAction(Client.Game.Random),
             ];
         }
     }

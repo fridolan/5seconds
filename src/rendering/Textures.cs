@@ -11,6 +11,8 @@ namespace fiveSeconds
         public static int prop_atlas = LoadTexture("images/prop_atlas.png", false);
         public static int entity_atlas = LoadTexture("images/entity_atlas.png", false);
         public static int special_tile_atlas = LoadTexture("images/special_tile_atlas.png", false);
+        public static int effect_atlas = LoadTexture("images/ability_atlas.png", false);
+
         public static int slider_head = LoadTexture("images/slider_head.png", false);
         public static int slightly_transparent_white = LoadTexture("images/slightly_transparent_white.png");
         public static int actions_slots = LoadTexture("images/actions_slots.png");
@@ -37,13 +39,13 @@ namespace fiveSeconds
 
         public static TextureInfo INFO_actions_slots = new()
         {
-            Margin = (7,7),
+            Margin = (7, 7),
             Size = (227, 30),
         };
 
         public static TextureInfo INFO_slot = new()
         {
-            Margin = (5,5),
+            Margin = (5, 5),
             Size = (32, 32)
         };
 

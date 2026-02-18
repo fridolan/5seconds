@@ -12,7 +12,13 @@ namespace fiveSeconds
 
         public override void HandleAbilityInput(AbilityContext context)
         {
-            throw new NotImplementedException();
+            Start = context.SourceEntity.Position;
+            EntityID = context.SourceEntity.ID;
+            if (context.ValidHover)
+            {
+                Goal = context.HoveredTile;
+                Complete = true;
+            }
         }
     }
 }

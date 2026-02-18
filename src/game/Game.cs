@@ -18,8 +18,8 @@ namespace fiveSeconds
         public Stage CurrentStage;
 
         public bool ManuallyPaused = false;
-        public float InputTimeLeft = 0;
-        public float InputPhaseLength = 6;
+        public long InputTimeLeft = 0;
+        public long InputPhaseLength = 6 * 1_000_000;
         public int AbilityIDCounter = 0;
 
         private bool firstUpdateTick = false;
@@ -41,16 +41,16 @@ namespace fiveSeconds
 
         public void OnUpdateFrame(FrameEventArgs args)
         {
-            float dT = (float)args.Time;
-            if (State == GameState.INPUT) Input(dT);
-            else if (State == GameState.UPDATE) Update(dT);
-            else if (State == GameState.PAUSE) Pause(dT);
-            else if (State == GameState.GAMESTART) GameStart(dT);
+            long microseconds = (long)Math.Round(args.Time * 1_000_000.0);
+            if (State == GameState.INPUT) Input(microseconds);
+            else if (State == GameState.UPDATE) Update(microseconds);
+            else if (State == GameState.PAUSE) Pause(microseconds);
+            else if (State == GameState.GAMESTART) GameStart(microseconds);
         }
 
-        private void Input(float dT)
+        private void Input(long microseconds)
         {
-            InputTimeLeft -= dT;
+            InputTimeLeft -= microseconds;
             if (InputTimeLeft <= 0)
             {
                 if (Window.Server != null)
@@ -82,12 +82,13 @@ namespace fiveSeconds
         private bool ownUpdateDone = false;
         private bool confirmedUpdateToServer;
 
-        private void Update(float dT)
+        private void Update(long microseconds)
         {
+            
             if (!ownUpdateDone)
             {
                 confirmedUpdateToServer = false;
-                CurrentStage.Tick(dT, firstUpdateTick, out bool done);
+                CurrentStage.Tick(microseconds, firstUpdateTick, out bool done);
                 if (done)
                 {
                     ownUpdateDone = true;
@@ -118,13 +119,13 @@ namespace fiveSeconds
             firstUpdateTick = false;
         }
 
-        public void Pause(float dT)
+        public void Pause(long microseconds)
         {
 
         }
 
         public Dictionary<byte, bool> ClientsReceivedStart = [];
-        public void GameStart(float dT)
+        public void GameStart(long microseconds)
         {
             if (Window.Server != null)
             {

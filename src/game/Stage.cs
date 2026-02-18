@@ -21,8 +21,9 @@ namespace fiveSeconds
         public bool TileMeshDirty = false;
 
         public List<ActionList> ActionLists;
+        public List<Projectile> Projectiles = [];
 
-        private float roundTime = 0;
+        private long roundTime = 0;
         public int Round = 0;
 
         public Entity? PlayerEntity => Window.Client == null ? null : EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
@@ -48,9 +49,10 @@ namespace fiveSeconds
             return stage;
         }
 
-        public void Tick(float dT, bool first, out bool done)
+        public void Tick(long microseconds, bool first, out bool done)
         {
-            roundTime += dT;
+            roundTime += microseconds;
+
             GetAllActionLists(out List<ActionList> entityActionLists);
 
             ActionLists = [.. entityActionLists.Where(l => l is { Finished: false, Waiting: false })];
@@ -64,14 +66,54 @@ namespace fiveSeconds
                 ServerMessages.SetGameState(Window.Server.bWriter, Client.Game.State, Client.Game.InputTimeLeft, Round);
             }
 
+            /* 
+                        for (int i = 0; i < Projectiles.Count; i++)
+                        {
+
+                            Projectile v = Projectiles[i];
+                            float now = v.NextTickTime;
+                            float timePassed = now - v.PreviousTickTime;
+                            bool finished = v.TickCallBack(v, timePassed);
+                            v.PreviousTickTime = now;
+                            v.TimePassed += timePassed;
+
+                            if (finished || (v.FinishByDuration && v.TimePassed >= v.Duration))
+                            {
+                                Projectiles.RemoveAt(i);
+                                i--;
+                            }
+                        } */
+
             if (ActionLists.Count > 0)
             {
+                for (int i = 0; i < ActionLists.Count; i++)
+                {
+                    //Console.WriteLine($"{i} Act-t: {ActionLists[i].GetNextTiming()}");
+                }
                 //Console.WriteLine($"ActionLists remaining {ActionLists.Count}");
                 ActionList nextList = ActionLists.MinBy(l => l.GetNextTiming());
-                if (nextList != null && nextList.GetNextTiming() <= roundTime)
+                Projectile? nextProjectile = Projectiles.MinBy(p => p.NextTickTime);
+
+                if (nextList != null && nextList.GetNextTiming() <= roundTime && (nextProjectile == null || nextProjectile.NextTickTime >= nextList.GetNextTiming()))
                 {
                     nextList.Act();
                 }
+                else if (nextProjectile != null && nextProjectile.NextTickTime <= roundTime && (nextList == null || nextList.GetNextTiming() > nextProjectile.NextTickTime))
+                {
+                    Projectile v = nextProjectile;
+                    long now = v.NextTickTime;
+                    long timePassed = now - v.PreviousTickTime;
+                    bool finished = v.TickCallBack(v, timePassed);
+                    v.PreviousTickTime = now;
+                    v.TimePassed += timePassed;
+                    Console.WriteLine($"T {v.Duration - v.TimePassed}");
+
+                    if (finished || (v.FinishByDuration && v.TimePassed >= v.Duration))
+                    {
+                        Projectiles.Remove(v);
+                    }
+                }
+
 
                 waitingActionLists.ForEach(l => l.Act());
 
@@ -79,6 +121,14 @@ namespace fiveSeconds
             }
             else
             {
+                for (int i = 0; i < Projectiles.Count; i++)
+                {
+
+                    Projectile v = Projectiles[i];
+                    v.NextTickTime -= roundTime;
+                    v.PreviousTickTime -= roundTime;
+                }
+
                 Console.WriteLine("Round over");
                 done = true;
                 roundTime = 0;

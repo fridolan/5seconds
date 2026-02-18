@@ -15,6 +15,8 @@ namespace fiveSeconds
         public int TimeCost;
         public string Name;
 
+        public static Stage stage => Client.Game.CurrentStage;
+
         public Type InputType;
 
         /*       public abstract void InitAbilityInput();

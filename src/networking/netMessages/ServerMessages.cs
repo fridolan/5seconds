@@ -86,7 +86,7 @@ namespace fiveSeconds
             Client.Game.CurrentStage.Round = round;
         }
 
-        public static void SetGameState(NetDataWriter writer, GameState state, float time, int round)
+        public static void SetGameState(NetDataWriter writer, GameState state, long time, int round)
         {
             writer.Put((byte)SMessageType.SetGameState);
             writer.Put((int)state);
@@ -100,7 +100,7 @@ namespace fiveSeconds
 
             GameState gameState = (GameState)reader.GetInt();
             Client.Game.SetState(gameState);
-            float time = reader.GetFloat();
+            long time = reader.GetLong();
             int round = reader.GetInt();
             Console.WriteLine($"Client: Handle rGameState {gameState} {time} {round}");
             if (gameState == GameState.INPUT)

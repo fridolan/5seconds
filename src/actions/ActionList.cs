@@ -8,19 +8,20 @@ namespace fiveSeconds
         public int NextActionIndex = 0;
         public AbilityAction? NextAction => NextActionIndex >= Actions.Count ? null : Actions[NextActionIndex];
         public bool Finished => Actions.Count <= NextActionIndex;
-        public float Timer = 0;
+        public long Timer = 0;
         public bool Waiting => NextAction is {Waiting: true};
 
-        public float GetNextTiming()
+        public long GetNextTiming()
         {
             if (Actions.Count > NextActionIndex)
                 return Timer + Actions[NextActionIndex].NextActivationTime;
-            else return float.MaxValue;
+            else return long.MaxValue;
         }
 
         public void Act()
         {
             AbilityAction action = Actions[NextActionIndex];
+            action.RoundTime = Timer;
             action.Execute();
             if (action.Finished)
             {
@@ -54,7 +55,7 @@ namespace fiveSeconds
             ActionList newList = new()
             {
                 NextActionIndex = reader.GetInt(),
-                Timer = reader.GetFloat(),
+                Timer = reader.GetLong(),
             };
 
             Console.WriteLine($"ActionList from Reader, NextActionIndex {newList.NextActionIndex} Timer {newList.Timer}");

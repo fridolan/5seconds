@@ -12,11 +12,11 @@ namespace fiveSeconds
 
         private Entity ToEntity;
         private Entity Entity;
-        private float AttackTime = 1f;
+        private long AttackTime = 1 * 1_000_000;
 
         public MeleeAttackEntityAbility(Random random)
         {
-
+            
         }
 
         #region Activations
@@ -39,7 +39,7 @@ namespace fiveSeconds
         {
             SourceTargetInput input = (SourceTargetInput)action.Input;
 
-            Console.WriteLine($"Euc {(Entity.Position - ToEntity.Position).EuclideanLength}");
+            //Console.WriteLine($"Euc {(Entity.Position - ToEntity.Position).EuclideanLength}");
             if ((Entity.Position - ToEntity.Position).EuclideanLength < 2)
             {
                 CombatContext combatContext = new()
