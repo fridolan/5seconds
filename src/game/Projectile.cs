@@ -29,8 +29,8 @@ namespace fiveSeconds
 
         public bool FinishByDuration = true;
 
-        public Action<Projectile, Mesh, float> DrawCallBack;
-        public Func<Projectile, long, bool> TickCallBack;
+        public Action<Projectile, Mesh, float> DrawCallback;
+        public Func<Projectile, long, bool> TickCallback;
 
         public static void Draw(Projectile projectile, Mesh mesh)
         {

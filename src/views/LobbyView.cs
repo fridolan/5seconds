@@ -23,6 +23,7 @@ namespace fiveSeconds
         private TextInputElement heightText;
         private TextInputElement seedInput;
         private TextInputElement seedText;
+        private ButtonListElement playerList;
 
         public LobbyView()
         {
@@ -68,7 +69,7 @@ namespace fiveSeconds
                     Client.Game.SetState(GameState.GAMESTART);
                     ServerMessages.SetLobbyInfo(Window.Server.bWriter);
                     ServerMessages.GameStart(Window.Server.bWriter);
-                    
+
                 }
             };
 
@@ -182,6 +183,26 @@ namespace fiveSeconds
                     }
                 }
             };
+            playerList = new()
+            {
+                BaseElement = new()
+                {
+                    Position = card.UpperRight - (card.BaseElement.Size.X / 4, 0) + innerMargin,
+                    Size = new Vector2(card.BaseElement.Size.X / 4f, card.BaseElement.Size.Y * 0.8f) - innerMargin * 2,
+                },
+                ButtonElementCallback = (i) =>
+                {
+                    if(Players.Count <= i) return new ButtonElement();
+                    Player player = Players[i];
+                    return new ButtonElement()
+                    {
+                        Text = $"{player.ID}, {player.ClientId} => {player.Entity?.ID}",
+                        BorderSize = 1,
+                    };
+                },
+                ElementHeight = card.BaseElement.Size.Y / 16f,
+                OuterMargin = innerMargin / 2,
+            };
         }
 
         public override void HandleInputs(FrameEventArgs args)
@@ -195,6 +216,7 @@ namespace fiveSeconds
                 seedInput.HandleInputs(dT);
             }
             closeGameButton.HandleInputs();
+            playerList.HandleInputs();
 
         }
 
@@ -239,6 +261,10 @@ namespace fiveSeconds
             heightText.Render();
             seedInput.Render();
             seedText.Render();
+
+            playerList.GenerateElements(Players.Count);
+
+            playerList.Render(dT);
 
             HudRenderer.Draw(true);
             TextHandler.renderer.Draw();

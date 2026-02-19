@@ -149,8 +149,10 @@ namespace fiveSeconds
                 p.Write(writer);
             });
 
+            LobbyView.Players = players;
+
             int version = LobbyInfoVersion;
-            Console.WriteLine($"Sending LobbyInfo.. v{version}");
+            Console.WriteLine($"Sending LobbyInfo.. v{version} {players.Count}");
             writer.Put(version);
         }
 

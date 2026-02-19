@@ -49,6 +49,8 @@ namespace fiveSeconds
             return stage;
         }
 
+        private ActionList previousActionList;
+
         public void Tick(long microseconds, bool first, out bool done)
         {
             roundTime += microseconds;
@@ -97,13 +99,14 @@ namespace fiveSeconds
                 if (nextList != null && nextList.GetNextTiming() <= roundTime && (nextProjectile == null || nextProjectile.NextTickTime >= nextList.GetNextTiming()))
                 {
                     nextList.Act();
+                    previousActionList = nextList;
                 }
                 else if (nextProjectile != null && nextProjectile.NextTickTime <= roundTime && (nextList == null || nextList.GetNextTiming() > nextProjectile.NextTickTime))
                 {
                     Projectile v = nextProjectile;
                     long now = v.NextTickTime;
                     long timePassed = now - v.PreviousTickTime;
-                    bool finished = v.TickCallBack(v, timePassed);
+                    bool finished = v.TickCallback(v, timePassed);
                     v.PreviousTickTime = now;
                     v.TimePassed += timePassed;
                     Console.WriteLine($"T {v.Duration - v.TimePassed}");
@@ -121,12 +124,15 @@ namespace fiveSeconds
             }
             else
             {
-                for (int i = 0; i < Projectiles.Count; i++)
+                if (previousActionList != null)
                 {
+                    for (int i = 0; i < Projectiles.Count; i++)
+                    {
 
-                    Projectile v = Projectiles[i];
-                    v.NextTickTime -= roundTime;
-                    v.PreviousTickTime -= roundTime;
+                        Projectile v = Projectiles[i];
+                        v.NextTickTime -= previousActionList.Timer;
+                        v.PreviousTickTime -= previousActionList.Timer;
+                    }
                 }
 
                 Console.WriteLine("Round over");

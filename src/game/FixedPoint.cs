@@ -40,7 +40,6 @@ namespace fiveSeconds
             int y = v.Y;
             long lengthSq = (long)x * x + (long)y * y;
             long length = IntSqrt(lengthSq);
-            Console.WriteLine($"Normalize {lengthSq} {length}");
 
             if (length == 0)
             {

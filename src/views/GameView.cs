@@ -325,7 +325,7 @@ namespace fiveSeconds
 
             stage.Projectiles.ForEach((p) =>
             {
-                p.DrawCallBack(p,EffectMesh, dT);
+                p.DrawCallback(p,EffectMesh, dT);
             });
 
             EffectMesh.UploadToGPU();

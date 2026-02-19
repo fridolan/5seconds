@@ -20,11 +20,15 @@ namespace fiveSeconds
         public override void Begin(AbilityAction action)
         {
             StartGoalInput input = (StartGoalInput)action.Input;
+            Entity = stage.GetEntityByID(input.EntityID);
+            if (Entity is not ICombat) throw new Exception("MeleeAttackEntityAction Entity not ICombat entity");
+            
+            input.Start = Entity.Position;
+
             Vector2i tileDistance = input.Goal - input.Start;
             Vector2i directionFixed = FP.Normalize(FP.ToFixed(tileDistance), out int lengthFixed);
             Vector2i velocityFixed = directionFixed * SpeedPercent / 100;
-            Entity = stage.GetEntityByID(input.EntityID);
-            if (Entity is not ICombat) throw new Exception("MeleeAttackEntityAction Entity not ICombat entity");
+            
 
             Console.WriteLine($"Creating Fireball with tD {tileDistance}, dF {directionFixed}, vF {velocityFixed}, lF {lengthFixed}");
 
@@ -36,7 +40,7 @@ namespace fiveSeconds
                 PosFP = FP.ToFixed(input.Start) + (FP.SCALE / 2, FP.SCALE / 2),
                 VisualPos = new Vector2(0.5f, 0.5f) + input.Start,
                 SizePercent = (SizePercent, SizePercent),
-                DrawCallBack = (effect, mesh, dT) =>
+                DrawCallback = (effect, mesh, dT) =>
                 {
                     if(Client.Game.State == GameState.UPDATE)
                     effect.Advance(dT);
@@ -45,7 +49,7 @@ namespace fiveSeconds
                     Projectile.ExtraDraw(effect, mesh, -1.75f / (float)SizePercent * 100f * speedOffsetMult, (0, 0), EffectAtlasIndeces.FIREBALL_TRAIL_1);
                     Projectile.Draw(effect, mesh);
                 },
-                TickCallBack = (proj, dT) =>
+                TickCallback = (proj, dT) =>
                 {
                     //effect.PosFP = (FP.SCALE / 2, FP.SCALE / 2) + FP.ToFixed(input.Start) + (Vector2)(input.Goal - input.Start) * (effect.TimePassed / effect.Duration);
                     proj.PosFP += FP.Mult(proj.VelocityFP, FP.Div((int)dT, 1_000_000));
@@ -71,6 +75,7 @@ namespace fiveSeconds
                     return false;
                 },
                 NextTickTime = action.RoundTime,
+                PreviousTickTime = action.RoundTime,
 
             });
 
