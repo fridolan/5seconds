@@ -23,6 +23,12 @@ namespace fiveSeconds
             action.StepsTaken = 0;
 
             List<Vector2i> path = stage.GetPathTo(input.EntityID, input.Goal);
+            string s = "Path: ";
+            for(int i = 0; i < path.Count; i++)
+            {
+                s += path[i];
+            }
+            Console.WriteLine(s);
 
             stage.MoveEntity(input.EntityID, path[0]);
             action.NextActivationTime = (action.StepsTaken + 1) * TimePerStep;
@@ -34,6 +40,13 @@ namespace fiveSeconds
             AutoStartGoalInput input = (AutoStartGoalInput)action.Input;
             //Console.WriteLine($"TakeStep {Path[NextStep]} {EntityID}");
             List<Vector2i> path = Client.Game.CurrentStage.GetPathTo(input.EntityID, input.Goal);
+            string s = "Path: ";
+            for(int i = 0; i < path.Count; i++)
+            {
+                s += path[i];
+            }
+            Console.WriteLine(s);
+            
             if (path.Count < 2)
             {
                 action.Finished = true;

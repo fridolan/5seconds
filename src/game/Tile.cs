@@ -19,12 +19,13 @@ namespace fiveSeconds
 
         public static Floor ABYSS = new()
         {
-
+            AtlasIndex = 1,
+            Walkable = false,
         };
 
         public static Floor STONE = new()
         {
-            AtlasIndex = 0
+            AtlasIndex = 0,
         };
     }
 
@@ -38,7 +39,7 @@ namespace fiveSeconds
 
         public static Wall STONE = new()
         {
-            
+            AtlasIndex = 2,
         };
     }
 }

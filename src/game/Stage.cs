@@ -26,6 +26,8 @@ namespace fiveSeconds
         private long roundTime = 0;
         public int Round = 0;
 
+        public Pathfinder Pathfinder;
+
         public Entity? PlayerEntity => Window.Client == null ? null : EntityList.Find(e => e.ID == Window.Client.ControlledEntityID);
 
         public static Dictionary<Type, int> GetTypeIndex = new(){
@@ -38,6 +40,7 @@ namespace fiveSeconds
 
         public static Stage GetStage(LobbyInfo info, Game game)
         {
+            Client.Game.Random = new Random(info.Seed);
             Stage stage = new Cave1()
             {
                 Width = info.Width,
@@ -163,6 +166,8 @@ namespace fiveSeconds
         #region Render
         public void CreateTileMesh()
         {
+            Pathfinder = new(Tiles);
+
             TileMesh = new();
 
             for (int i = 0; i < Height; i++)
@@ -292,6 +297,12 @@ namespace fiveSeconds
 
         public List<Vector2i> GetPathTo(Entity entity, Vector2i goal)
         {
+            List<Vector2i> path = Pathfinder.FindPath(entity.Position, goal);
+            return path ?? [entity.Position];
+        }
+
+        /* public List<Vector2i> GetPathTo(Entity entity, Vector2i goal)
+        {
             Vector2i origin = entity.Position;
             //Console.WriteLine($"GetPathTo {origin}->{goal}");
 
@@ -309,7 +320,7 @@ namespace fiveSeconds
             }
 
             return path;
-        }
+        } */
 
         public List<Vector2i> GetPathTo(int entityID, Vector2i goal)
         {
@@ -341,6 +352,38 @@ namespace fiveSeconds
             writer.Put(Seed);
             writer.Put(Width);
             writer.Put(Height);
+        }
+
+        public void Spread(Tile tile, int x, int y, int currentChancePercent, int nextChanceBasePercent)
+        {
+            Vector2i[] fields = [
+              (-1, 0),
+              (1, 0),
+              (0, -1),
+              (0, 1)
+            ];
+
+            Tiles[y][x] = tile;
+
+            Random r = Client.Game.Random;
+            for (int h = 0; h < fields.Length; h++)
+            {
+                Vector2i field = fields[h];
+                int i = Math.Clamp(field.Y + y, 0, Height - 1);
+                int j = Math.Clamp(field.X + x, 0, Width - 1);
+
+
+                if (i == y && j == y) continue;
+                if (Tiles[i][j] == tile) continue;
+
+                int firstRoll = r.Next(0, 100);
+                if (firstRoll < currentChancePercent)
+                {
+                    int nextChance = (currentChancePercent - firstRoll) * 100 / currentChancePercent * nextChanceBasePercent / 100;
+                    Spread(tile, j, i, nextChance, nextChanceBasePercent);
+                }
+
+            }
         }
 
         #endregion

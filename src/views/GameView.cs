@@ -524,6 +524,11 @@ namespace fiveSeconds
                     }
                 }
             }
+
+            if (Keybind.INTERACT.IsPressed())
+            {
+                Pathfinder.Test(Client.Game.CurrentStage.Tiles);
+            }
         }
 
         private Vector2i ScreenToTilePosition(Vector2 mousePos, float angle)

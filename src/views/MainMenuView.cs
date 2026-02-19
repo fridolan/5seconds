@@ -77,6 +77,19 @@ namespace fiveSeconds
             }
         };
 
+
+        public static BorderElement Card = new()
+        {
+            BaseElement = new()
+            {
+                Position = (MultiplayerButton.LowerLeft.X - outerMargin.X, -outerMargin.Y),
+                Size = (MultiplayerButton.BaseElement.Size.X + outerMargin.X * 3, Window.Height) + outerMargin * 2,
+                TextureId = Textures.hud_transparent_color,
+            },
+            RenderBaseElement = true,
+        };
+
+
         private static MultiplayerElement multiplayerElement = new(outerMargin);
 
         public override void HandleInputs(FrameEventArgs args)
@@ -98,6 +111,7 @@ namespace fiveSeconds
         {
             float dT = (float)args.Time;
             Background.Render();
+            Card.Render();
             DirectPlayButton.Render(dT);
 
             if (multiplayerCardOpen)

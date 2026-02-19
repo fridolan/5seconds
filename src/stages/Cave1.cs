@@ -1,3 +1,5 @@
+using OpenTK.Mathematics;
+
 namespace fiveSeconds
 {
     public class Cave1 : Stage
@@ -9,6 +11,7 @@ namespace fiveSeconds
 
         public override void Generate()
         {
+            Random r = Client.Game.Random;
             Tiles = new Tile[Height][];
             for (int i = 0; i < Height; i++)
             {
@@ -17,6 +20,25 @@ namespace fiveSeconds
                 {
                     Tiles[i][j] = Floor.STONE;
                 }
+            }
+            int holeCount = Width * Height / 100;
+            // Holes
+            for (int i = 0; i < holeCount; i++)
+            {
+                int startX = r.Next(0, Width);
+                int startY = r.Next(0, Height);
+                
+                Spread(Floor.ABYSS, startX, startY, 50, 80);
+
+            }
+            // Pillar
+            int pillarCount = Width * Height / 200;
+            for(int i = 0; i < pillarCount; i++)
+            {
+                int startX = r.Next(0, Width);
+                int startY = r.Next(0, Height);
+                
+                Spread(Wall.STONE, startX, startY, 80, 20);
             }
             CreateTileMesh();
 
@@ -45,8 +67,6 @@ namespace fiveSeconds
                 players[i].Entity = entity;
                 AddEntity(entity);
             }
-
-
 
             CreateEntityMesh();
         }
